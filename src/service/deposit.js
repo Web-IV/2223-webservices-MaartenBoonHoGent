@@ -1,26 +1,55 @@
-let { DEPOSITS } = require('../data/mock_data');
+const depositRepo = require("../repository/deposit");
+const { getLogger } = require('../core/logging');
+
+const debugLog = (message, meta = {}) => {
+    if (!this.logger) this.logger = getLogger();
+    this.logger.debug(message, meta);
+};
 
 const getAll = async () => {
-    return { items: DEPOSITS, count: DEPOSITS.length };
+    debugLog('Fetching all deposits');
+    const items = await depositRepo.findAll();
+    const count = await depositRepo.findCount();
+    return {
+      items,
+      count,
+    };
 }
 
-const getById = async (id) => {
-    throw new Error('Not implemented');
+const getById = async ({date, accountNr}) => {
+    debugLog(`Fetching deposit with key ${date} and ${accountNr}`);
+    const deposit = await depositRepo.findById({date, accountNr});
+
+    if (!deposit) { throw new Error(`Deposit with key ${date} and ${accountNr} not found`); }
+    return deposit;
 }
 
-
-const updateById = async (id, { date, accountNr, sum}) => {
-    throw new Error('Not implemented');
+const updateById = async ({date, accountNr}, {sum}) => {
+    debugLog(`Updating deposit with key ${date} and ${accountNr}, new values: ${JSON.stringify({sum})}`);
+    await depositRepo.update({date, accountNr}, {sum});
+    return getById({date, accountNr});
 }
 
-const deleteById = async (id) => {
-    throw new Error('Not implemented');
+const deleteById = async ({date, accountNr}) => {
+    debugLog(`Deleting deposit with key ${date} and ${accountNr}`);
+    const deposit = await depositRepo.findById({date, accountNr});
+    if (!deposit) { throw new Error(`Deposit with key ${date} and ${accountNr} not found`); }
+    else {
+        await depositRepo.deleteById({date, accountNr});
+    }
 }
 
 const create = async ({ date, accountNr, sum}) => {
-    const id = DEPOSITS.length + 1;
-    const deposit = { id, date, accountNr, sum };
-    
+    debugLog(`Creating deposit with values ${JSON.stringify(deposit)}`);
+    // Get the current deposit
+    const deposit = await depositRepo.findById({date, accountNr});
+    if (deposit) {
+        throw new Error(`Deposit with key ${date} and ${accountNr} already exists`);
+    }
+    else {
+        await depositRepo.create({date, accountNr, sum});
+    }
+    return getById({date, accountNr});
 }
 
 module.exports = {

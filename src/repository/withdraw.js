@@ -1,35 +1,56 @@
-const { tables, getIndex} = require('../data/index');
+const { tables, getKnex} = require('../data/index');
 const { getLogger } = require('../core/logging');
 
-const findAll = () => {
-    return getKnex(tables.WITHDRAWS).select();
+const findAll = async () => {
+    return await getKnex(tables.WITHDRAWS).select();
 }
 
-const findById = ([id1 , id2]) => {
-    // Not implemented
+const findCount = async () => {
+    return await getKnex(tables.WITHDRAWS).count('*');
 }
 
-const findByAccountId = (accountId) => {µ
-    // Not implemented
-
+const findById = async ({date, accountNr}) => {
+    return await getKnex(tables.WITHDRAWS).select().where({'date': date,
+    'accountNr': accountNr}).first();
 }
 
-const create = (withdraw) => {
-    // Not implemented
+const create = async ({date, accountNr, sum}) => {
+    try {
+        await getKnex(tables.WITHDRAWS).insert({'date': date, 'accountNr': accountNr,'sum': sum});
+    }
+    catch (err) {
+        const logger = getLogger();
+        logger.error(`Error creating withdraw with values ${JSON.stringify(withdraw)}`, err);
+        throw err;
+    }
 }
 
-const update = (withdraw) => {
-    // Not implemented
+const update = async ({date, accountNr}, {sum}) => {
+    try {
+        await getKnex(tables.WITHDRAWS).where({'date': date, 'accountNr': accountNr}).update({'sum': sum});
+    }
+    catch (err) {
+        const logger = getLogger();
+        logger.error(`Error updating withdraw with key ${date} and ${accountNr}`, err);
+        throw err;
+    }
 }
 
-const deleteById = ([id1 , id2]) => {
-    // Not implemented
+const deleteById = async ({date, accountNr}) => {
+    try {
+        await getKnex(tables.WITHDRAWS).where({'date': date, 'accountNr': accountNr}).del();
+    }
+    catch (err) {
+        const logger = getLogger();
+        logger.error(`Error deleting withdraw with key ${date} and ${accountNr}`, err);
+        throw err;
+    }
 }
 
 module.exports = {
     findAll,
+    findCount,
     findById,
-    findByAccountId,
     create,
     update,
     deleteById

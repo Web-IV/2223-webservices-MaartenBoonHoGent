@@ -85,6 +85,19 @@ async function initializeData() {
     return knexInstance;
 };
 
+// Shutdown
+async function shutdown() {
+	if (knexInstance) {
+		const logger = getLogger();
+		logger.info('Attempting to shut down connection to the database');
+
+		await knexInstance.destroy();
+		knexInstance = null;
+
+		logger.info('Connection to the database shut down');
+	}
+}
+
 
 function getKnex() {
 	if (!knexInstance) throw new Error('Please initialize the data layer before getting the Knex instance');
@@ -103,4 +116,5 @@ module.exports = {
 	tables,
 	initializeData,
     getKnex,
+	shutdown,
 };

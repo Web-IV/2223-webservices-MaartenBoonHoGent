@@ -1,26 +1,64 @@
-let { STOCKS } = require('../data/mock_data');
+const stockRepo = require("../repository/stock");
+const { getLogger } = require('../core/logging');
 
+const debugLog = (message, meta = {}) => {
+    if (!this.logger) this.logger = getLogger();
+    this.logger.debug(message, meta);
+};
 const getAll = async () => {
-    return { items: STOCKS, count: STOCKS.length };
+    debugLog('Fetching all stocks');
+    const items = await stockRepo.findAll();
+    const count = await stockRepo.findCount();
+    return {
+      items,
+      count,
+    };
 }
 
-const getById = async (id) => {
-    throw new Error('Not implemented');
+const getById = async (stockId) => {
+    debugLog(`Fetching stock with id ${stockId}`);
+    const stock = await stockRepo.findById(stockId);
+
+    if (!stock) { throw new Error(`Stock with id ${stockId} not found`); }
+    return stock;
 }
 
-const updateById = async (id, { symbol, name, industry, sector, IPODate, dateOfIncorporation}) => {
-    throw new Error('Not implemented');
+const getBySymbol = async (symbol) => {
+    debugLog(`Fetching stock with symbol ${symbol}`);
+    const stock = await stockRepo.findBySymbol(symbol);
+
+    if (!stock) { throw new Error(`Stock with symbol ${symbol} not found`); }
+    return stock;
 }
 
-const deleteById = async (id) => {
-    throw new Error('Not implemented');
+
+const updateById = async (stockId, { symbol, name, industry, sector, IPODate, dateOfIncorporation}) => {
+    debugLog(`Updating stock with id ${stockId}, new values: ${JSON.stringify({symbol, name, industry, sector, IPODate, dateOfIncorporation})}`);
+    await stockRepo.update(stockId, { symbol, name, industry, sector, IPODate, dateOfIncorporation});
+    return getById(stockId);
+}
+
+const deleteById = async (stockId) => {
+    debugLog(`Deleting stock with id ${stockId}`);
+    const stock = await stockRepo.findById(stockId);
+    if (!stock) { throw new Error(`Stock with id ${stockId} not found`); }
+    else {
+        await stockRepo.deleteById(stockId);
+    }
 }
 
 const create = async ({ symbol, name, industry, sector, IPODate, dateOfIncorporation}) => {
-    // Don't do this in production, this is just for demo purposes
-    const id = STOCKS.length + 1;
-    const stock = { id, symbol, name, industry, sector, IPODate, dateOfIncorporation };
+    debugLog(`Creating stock with values ${JSON.stringify({ symbol, name, industry, sector, IPODate, dateOfIncorporation})}`);
     
+    // Get the current stock
+    const stock = await stockRepo.findBySymbol(symbol);
+    if (stock) {
+        throw new Error(`Stock with symbol ${symbol} already exists`);
+    }
+    else {
+        stockRepo.create({ symbol, name, industry, sector, IPODate, dateOfIncorporation});
+    }
+    return getBySymbol(symbol);
 }
 
 module.exports = {
