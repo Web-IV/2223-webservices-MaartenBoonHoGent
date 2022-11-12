@@ -19,7 +19,7 @@ SELECT * FROM WebServices_Taak.Stock;
 
 module.exports = {
     up: async (knex) => {
-        await knex.schema.createTable(tables.user, (table) => {
+        await knex.schema.createTable(tables.stock, (table) => {
             table.bigint('stockId').unsigned().notNullable();
             table.string('symbol', 5).notNullable();
             table.string('name', 60).notNullable();

@@ -8,6 +8,8 @@ const DATABASE_HOST = config.get('database.host');
 const DATABASE_PORT = config.get('database.port');
 const DATABASE_USERNAME = config.get('database.username');
 const DATABASE_PASSWORD = config.get('database.password');
+const { join } = require('path');
+const { getLogger } = require('../core/logging');
 
 const knex = require('knex');
 
@@ -56,7 +58,7 @@ async function initializeData() {
 		await knexInstance.migrate.latest();
 	} catch (error) {
 		logger.error('Error while migrating: ' + error.message, { error });
-		throw new Error('Could not run the migrations');
+		//throw new Error('Could not run the migrations');
 		migrationsFailed = true;
 	}
 

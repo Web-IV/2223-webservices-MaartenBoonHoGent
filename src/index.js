@@ -1,11 +1,11 @@
 const Koa = require('koa');
 const koaCors = require('@koa/cors');
-const router = require('@koa/router');
+const Router = require('@koa/router');
 
 
 const config = require('config');
 const stockService = require('./service/stock');
-const { getLogger } = require('./core/logging')
+const { getLogger, initializeLogger } = require('./core/logging')
 
 const { initializeData } = require('./data');
 
@@ -18,6 +18,12 @@ const LOG_DISABLED = config.get('log.disabled');
 
 
 async function main() {
+
+	initializeLogger({
+		level: LOG_LEVEL,
+		disabled: LOG_DISABLED,
+		defaultMeta: { NODE_ENV },
+	  });
 	const logger = getLogger();
 	
 	await initializeData();
