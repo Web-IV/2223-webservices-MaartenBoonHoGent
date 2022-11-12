@@ -29,14 +29,19 @@ async function initializeData() {
 			directory: join('src', 'data', 'migrations'),
 			tableName: 'knex_migrations',
 		},
+
+		seeds: {
+			directory: join('src', 'data', 'seeds'),
+		},
     }
 
-	//
+	// Initialize Knex
 
     knexInstance = knex(knexOptions);
 
     const logger = getLogger();
 
+	// Database test
 	try {
 		await knexInstance.raw('SELECT 1+1 AS result');
 	} catch (error) {
@@ -66,8 +71,15 @@ async function initializeData() {
 	}
 
 	// Seeds
+	if (isDevelopment) {
+		try {
+			await knexInstance.seed.run();
+		} catch (error) {
+			logger.error('Error while seeding: ' + error.message, { error });
+			throw new Error('Could not run the seeds');
+		}
+	}
 
-	
     return knexInstance;
 };
 
@@ -78,14 +90,15 @@ function getKnex() {
 }
 
 const tables = Object.freeze({
-    stock: 'stocks',
-    withdraw: 'withdrawals',
-    deposit: 'deposits',
-    account: 'accounts',
-    trade: 'trades' 
+    stock: 'Stock',
+    withdraw: 'Withdraw',
+    deposit: 'Deposit',
+    account: 'Account',
+    trade: 'Trade' 
 });
 	
 module.exports = {
+	tables,
 	initializeData,
     getKnex,
 };
