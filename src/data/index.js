@@ -24,7 +24,14 @@ async function initializeData() {
 			password: DATABASE_PASSWORD,
 			insecureAuth: isDevelopment,
 		},
+		
+		migrations: {
+			directory: join('src', 'data', 'migrations'),
+			tableName: 'knex_migrations',
+		},
     }
+
+	//
 
     knexInstance = knex(knexOptions);
 
@@ -37,6 +44,30 @@ async function initializeData() {
 		throw new Error('Could not initialize the data layer');
 	}
 
+	// Migrations
+	let migrationsFailed = false;
+
+	try {
+		await knexInstance.migrate.latest();
+	} catch (error) {
+		logger.error('Error while migrating: ' + error.message, { error });
+		throw new Error('Could not run the migrations');
+		migrationsFailed = true;
+	}
+
+	if (migrationsFailed) {
+		try  {
+			// Bring the instance down
+			await knexInstance.migrate.down();
+		} catch (error) {
+			logger.error('Error while rolling back migrations: ' + error.message, { error });
+			throw new Error('Could not roll back the migrations');
+		}
+	}
+
+	// Seeds
+
+	
     return knexInstance;
 };
 
@@ -53,7 +84,7 @@ const tables = Object.freeze({
     account: 'accounts',
     trade: 'trades' 
 });
-
+	
 module.exports = {
 	initializeData,
     getKnex,
