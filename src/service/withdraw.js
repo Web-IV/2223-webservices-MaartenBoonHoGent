@@ -1,6 +1,6 @@
 const { WITHDRAWS } = require('../constants');
 
-const getAll = () => {
+const getAll = async () => {
     return { items: WITHDRAWS, count: WITHDRAWS.length };
 }
 
@@ -13,19 +13,19 @@ withdraw object:
     },
 */
 
-const getById = (id) => {
+const getById = async (id) => {
     throw new Error('Not implemented');
 }
 
-const updateById = (id, { date, accountNr, sum}) => {
+const updateById = async (id, { date, accountNr, sum}) => {
     throw new Error('Not implemented');
 }
 
-const deleteById = (id) => {
+const deleteById = async (id) => {
     throw new Error('Not implemented');
 }
 
-const create = ({ date, accountNr, sum}) => {
+const create = async ({ date, accountNr, sum}) => {
     const id = WITHDRAWS.length + 1;
     const withdraw = { id, date, accountNr, sum };
     

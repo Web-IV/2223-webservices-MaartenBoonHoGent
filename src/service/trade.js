@@ -1,22 +1,22 @@
 const { TRADES }  = require('../data/mock_data');
 
-const getAll = () => {
+const getAll = async () => {
     return { items: TRADES, count: TRADES.length };
 }
 
-const getById = (id) => {
+const getById = async (id) => {
     throw new Error('Not implemented');
 }
 
-const updateById = (tradeId, {stockId, priceBought, priceSold, dateBought, dateSold, amount}) => {
+const updateById = async (tradeId, {stockId, priceBought, priceSold, dateBought, dateSold, amount}) => {
     throw new Error('Not implemented');
 }
 
-const deleteById = (tradeId) => {
+const deleteById = async (tradeId) => {
     throw new Error('Not implemented');
 }
 
-const create = ({stockId, priceBought, priceSold, dateBought, dateSold, amount}) => {
+const create = async ({stockId, priceBought, priceSold, dateBought, dateSold, amount}) => {
     const id = TRADES.length + 1;
     const trade = { id, stockId, priceBought, priceSold, dateBought, dateSold, amount };
     
