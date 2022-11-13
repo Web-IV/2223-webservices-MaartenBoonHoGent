@@ -14,7 +14,18 @@ const getAllAccounts = async (ctx) => {
 getAllAccounts.validationScheme = null;
 
 const createAccount = async (ctx) => {
-    ctx.body = await service.create(ctx.request.body);
+    await service.create({eMail: ctx.request.body.eMail, 
+        dateJoined: ctx.request.body.dateJoined, 
+        investedSum: ctx.request.body.investedSum, 
+        password: ctx.request.body.password});
+}
+createAccount.validationScheme = {
+    body: {
+        eMail: Joi.string().email().required(),
+        dateJoined: Joi.date().required(),
+        investedSum: Joi.number().required(),
+        password: Joi.string().required()
+    }
 }
 
 const updateAccount = async (ctx) => {
@@ -25,7 +36,7 @@ updateAccount.validationScheme = {
         accountNr: Joi.number().integer().positive().required(),
     },
     body: {
-        email : Joi.string().email().required(),
+        eMail : Joi.string().email().required(),
         password : Joi.string().required(),
         dateJoined : Joi.date().required(),
         investedSum : Joi.number().integer().positive().required(),
@@ -37,7 +48,7 @@ const deleteAccount = async (ctx) => {
 }
 deleteAccount.validationScheme = {
     params: {
-        id: Joi.number().integer().positive().required(),
+        accountNr: Joi.number().integer().positive().required(),
     }
 }
 

@@ -10,7 +10,7 @@ const debugLog = (message, meta = {}) => {
   
 
 const getAll = async () => {
-    debugLog('Fetching all transactions');
+    debugLog('Fetching all accounts');
     const items = await accountRepo.findAll();
     const count = items.length;
     return {
@@ -20,7 +20,7 @@ const getAll = async () => {
 };
 
 const getById = async (id) => {
-    debugLog(`Fetching transaction with id ${id}`);
+    debugLog(`Fetching account with id ${id}`);
     const account = await accountRepo.findById(id);
 
     if (!account) { throw new Error(`Transaction with id ${id} not found`); }
@@ -28,7 +28,7 @@ const getById = async (id) => {
 }
 
 const getByEmail = async (eMail) => {
-    debugLog(`Fetching transaction with eMail ${eMail}`);
+    debugLog(`Fetching account with eMail ${eMail}`);
     const account = await accountRepo.findByEmail(eMail);
 
     if (!account) { throw new Error(`Transaction with eMail ${eMail} not found`); }
@@ -36,20 +36,20 @@ const getByEmail = async (eMail) => {
 };
 
 const updateById = async (accountNr, { eMail, dateJoined, investedSum, password}) => {
-    debugLog(`Updating transaction with id ${accountNr}, new values: ${JSON.stringify({eMail, dateJoined, investedSum, password})}`);
+    debugLog(`Updating account with id ${accountNr}, new values: ${JSON.stringify({eMail, dateJoined, investedSum, password})}`);
     
     // Find the account
     const account = await accountRepo.findById(accountNr);
     if (!account) { throw new Error(`Account with id ${accountNr} not found`); }
     else {
-        await accountRepo.update({accountNr, eMail, dateJoined, investedSum, password});
+        await accountRepo.update(accountNr, {eMail, dateJoined, investedSum, password});
     }
 
     return getById(accountNr);
 }
 
 const deleteById = async (accountNr) => {
-    debugLog(`Deleting transaction with id ${accountNr}`);
+    debugLog(`Deleting account with id ${accountNr}`);
     const account = await accountRepo.findById(accountNr);
     if (!account) { throw new Error(`Account with id ${accountNr} not found`); }
     else {
@@ -60,8 +60,7 @@ const deleteById = async (accountNr) => {
 const create = async ({eMail, dateJoined, investedSum, password}) => {
     const account = {eMail, dateJoined, investedSum, password };
     debugLog(`Creating new account with values: ${JSON.stringify(account)}`);
-    const accountNr = await accountRepo.create(account);
-    return getById(accountNr);
+    await accountRepo.create(account);
 }
 
 module.exports = {

@@ -16,16 +16,15 @@ const findByEmail = async (email) => {
 
 const create = async ({eMail, dateJoined, investedSum, password}) => {
     try {
-        const [accountNr] = await getKnex()(tables.account).insert({
+        await getKnex()(tables.account).insert({
             'e-mail': eMail, 
             'date joined': dateJoined, 
             'invested sum': investedSum, 
             'password': password});
-        return accountNr;
     }
     catch (err) {
         const logger = getLogger();
-        logger.error(`Error creating account with values ${JSON.stringify(account)}`, err);
+        logger.error(`Error creating account with values ${JSON.stringify({eMail, dateJoined, investedSum, password})}`, err);
         throw err;
     }
 }
