@@ -27,6 +27,14 @@ const getById = async (id) => {
     return account;
 }
 
+const getByEmail = async (eMail) => {
+    debugLog(`Fetching transaction with eMail ${eMail}`);
+    const account = await accountRepo.findByEmail(eMail);
+
+    if (!account) { throw new Error(`Transaction with eMail ${eMail} not found`); }
+    return account;
+};
+
 const updateById = async (accountNr, { eMail, dateJoined, investedSum, password}) => {
     debugLog(`Updating transaction with id ${accountNr}, new values: ${JSON.stringify({eMail, dateJoined, investedSum, password})}`);
     
@@ -59,6 +67,7 @@ const create = async ({eMail, dateJoined, investedSum, password}) => {
 module.exports = {
     getAll,
     getById,
+    getByEmail,
     create,
     updateById,
     deleteById,

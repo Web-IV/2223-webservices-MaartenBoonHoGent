@@ -16,7 +16,7 @@ const findById = async (accountNr) => {
 }
 
 const findByEmail = async (email) => {
-    return getKnex()(tables.account).select().where('email', email).first();
+    return getKnex()(tables.account).select().where('e-mail', email).first();
 }
 
 const create = async ({eMail, dateJoined, investedSum, password}) => {

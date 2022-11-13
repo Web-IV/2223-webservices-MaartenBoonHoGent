@@ -12,6 +12,8 @@ async function main() {
 
     process.on('SIGTERM', onClose);
     process.on('SIGQUIT', onClose);
+    process.on('SIGINT', onClose);
+
   } catch (error){
     console.error(error);
     process.exit(-1);

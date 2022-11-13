@@ -16,7 +16,7 @@ const getAll = async () => {
     };
 }
 
-const getById = async ({date, accountNr}) => {
+const getById = async ({accountNr, date}) => {
     debugLog(`Fetching deposit with key ${date} and ${accountNr}`);
     const deposit = await depositRepo.findById({date, accountNr});
 
@@ -24,13 +24,13 @@ const getById = async ({date, accountNr}) => {
     return deposit;
 }
 
-const updateById = async ({date, accountNr}, {sum}) => {
+const updateById = async ({accountNr, date}, {sum}) => {
     debugLog(`Updating deposit with key ${date} and ${accountNr}, new values: ${JSON.stringify({sum})}`);
     await depositRepo.update({date, accountNr}, {sum});
     return getById({date, accountNr});
 }
 
-const deleteById = async ({date, accountNr}) => {
+const deleteById = async ({accountNr, date}) => {
     debugLog(`Deleting deposit with key ${date} and ${accountNr}`);
     const deposit = await depositRepo.findById({date, accountNr});
     if (!deposit) { throw new Error(`Deposit with key ${date} and ${accountNr} not found`); }
@@ -39,7 +39,7 @@ const deleteById = async ({date, accountNr}) => {
     }
 }
 
-const create = async ({ date, accountNr, sum}) => {
+const create = async ({ accountNr, date, sum}) => {
     debugLog(`Creating deposit with values ${JSON.stringify(deposit)}`);
     // Get the current deposit
     const deposit = await depositRepo.findById({date, accountNr});

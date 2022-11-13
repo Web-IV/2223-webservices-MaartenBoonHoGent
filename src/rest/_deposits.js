@@ -13,26 +13,8 @@ const getAllDeposits = async (ctx) => {
 }
 getAllDeposits.validationScheme = null;
 
-const getByAccountNr = async (ctx) => {
-    ctx.body = await service.getByAccountNr(ctx.params.accountNr);
-}
-getByAccountNr.validationScheme = {
-    params: {
-        accountNr: Joi.number().integer().positive().required(),
-    }
-}
-
-const getByDate = async (ctx) => {
-    ctx.body = await service.getByDate(ctx.params.date);
-}
-getByDate.validationScheme = {
-    params: {
-        date: Joi.date().required(),
-    }
-}
-
 const getByKey = async (ctx) => {
-    ctx.body = await service.getByKey(ctx.params.accountNr, ctx.params.date);
+    ctx.body = await service.getById({accountNr: ctx.params.accountNr, date: ctx.params.date});
 }
 getByKey.validationScheme = {
     params: {
@@ -84,8 +66,6 @@ module.exports = (app) => {
     const router = new Router({ prefix: '/deposits' });
     
     router.get('/', validate(getAllDeposits.validationScheme), getAllDeposits);
-    router.get('/:accountNr', validate(getByAccountNr.validationScheme), getByAccountNr);
-    router.get('/:date', validate(getByDate.validationScheme), getByDate);
     router.get('/:accountNr/:date', validate(getByKey.validationScheme), getByKey);
     router.post('/', validate(createDeposit.validationScheme), createDeposit);
     router.put('/:accountNr/:date', validate(updateDeposit.validationScheme), updateDeposit);
