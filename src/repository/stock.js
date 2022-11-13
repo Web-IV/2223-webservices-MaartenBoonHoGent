@@ -1,26 +1,26 @@
-const { tables, getIndex} = require('../data/index');
+const { tables, getKnex} = require('../data/index');
 const { getLogger } = require('../core/logging');
 
 const findAll = async () => {
-    return getKnex(tables.STOCKS).select().orderBy('stockId');
+    return getKnex()(tables.stock).select().orderBy('stockId');
 }
 
 const findCount = async () => {
-    return await getKnex(tables.STOCKS).count('*');
+    return await getKnex()(tables.stock).count('*');
 }
 
 const findById = async (stockId) => {
-    return await getKnex(tables.STOCKS).select().where('stockId', stockId).first();
+    return await getKnex()(tables.stock).select().where('stockId', stockId).first();
 
 }
 
 const findBySymbol = async (symbol) => {
-    return await getKnex(tables.STOCKS).select().where('symbol', symbol).first();
+    return await getKnex()(tables.stock).select().where('symbol', symbol).first();
 }
 
 const create = async ({symbol, name, industry, sector, IPODate, dateOfIncorporation}) => {
     try {
-        await getKnex(tables.STOCKS).insert(
+        await getKnex()(tables.stock).insert(
             {'symbol': symbol, 
             'name': name, 
             'industry': industry, 
@@ -37,7 +37,7 @@ const create = async ({symbol, name, industry, sector, IPODate, dateOfIncorporat
 const update = async (stockId, {symbol, name, industry, sector, IPODate, dateOfIncorporation}) => {
     
     try {
-        await getKnex(tables.STOCKS).where('stockId', stockId).update(
+        await getKnex()(tables.stock).where('stockId', stockId).update(
             {'symbol': symbol, 
             'name': name, 
             'industry': industry, 
@@ -54,7 +54,7 @@ const update = async (stockId, {symbol, name, industry, sector, IPODate, dateOfI
 
 const deleteById = async (stockId) => {
     try {
-        await getKnex(tables.STOCKS).where('stockId', stockId).del();
+        await getKnex()(tables.stock).where('stockId', stockId).del();
     }
     catch (err) {
         const logger = getLogger();

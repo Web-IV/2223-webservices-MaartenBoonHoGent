@@ -1,74 +1,21 @@
-const Koa = require('koa');
-const koaCors = require('@koa/cors');
-const Router = require('@koa/router');
-
-
-const config = require('config');
-const stockService = require('./service/stock');
-const { getLogger, initializeLogger } = require('./core/logging')
-
-const { initializeData } = require('./data');
-
-
-const CORS_ORIGINS = config.get('cors.origins');
-const CORS_MAX_AGE = config.get('cors.maxAge');
-const NODE_ENV = config.get('env');
-const LOG_LEVEL = config.get('log.level');
-const LOG_DISABLED = config.get('log.disabled');
-
+const createServer = require('./createServer');
 
 async function main() {
+  try {
+    const server = await createServer();
+    await server.start();
 
-	initializeLogger({
-		level: LOG_LEVEL,
-		disabled: LOG_DISABLED,
-		defaultMeta: { NODE_ENV },
-	  });
-	const logger = getLogger();
-	
-	await initializeData();
+    async function onClose() {
+      await server.stop();
+      process.exit(0);
+    }
 
-	console.log(`log level ${LOG_LEVEL}, logs enabled: ${LOG_DISABLED !== true}`)
-
-	const app = new Koa();
-	app.use(
-		koaCors({
-			origin: (ctx) => {
-				if (CORS_ORIGINS.indexOf(ctx.request.header.origin) !== -1) {
-					return ctx.request.header.origin;
-				}
-				return CORS_ORIGINS[0];
-			},
-			allowHeaders: ['Accept', 'Content-Type', 'Authorization'],
-			maxAge: CORS_MAX_AGE,
-		})
-	);
-
-
-	const router = new Router();
-
-	router.get("/api/stocks", async(ctx) => {
-		logger.info(JSON.stringify(ctx.request));
-		ctx.body = stockService.getAll();
-	});
-
-	router.post("/api/stocks", async(ctx) => {
-		ctx.body = stockService.create({...ctx.request.body});;
-	});
-
-	router.get("/api/stocks/:id", async(ctx) => {
-		ctx.body = stockService.getById(ctx.params.id);
-	});
-
-
-
-	app.use(router.routes());
-	app.use(router.allowedMethods());
-
-
-	logger.info(`🚀 Server listening on http://localhost:9000`);
-	app.listen(9000);
-		
-
+    process.on('SIGTERM', onClose);
+    process.on('SIGQUIT', onClose);
+  } catch (error){
+    console.error(error);
+    process.exit(-1);
+  }
 }
+
 main();

@@ -64,6 +64,7 @@ const create = async ({ symbol, name, industry, sector, IPODate, dateOfIncorpora
 module.exports = {
 	getAll,
 	getById,
+    getBySymbol,
 	create,
 	updateById,
 	deleteById,

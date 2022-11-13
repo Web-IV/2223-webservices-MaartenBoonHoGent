@@ -2,7 +2,7 @@ const Joi = require('joi');
 const Router = require('@koa/router');
 
 const service = require('../service/trade');
-const validate = require('../_validation.js');
+const validate = require('./_validation.js');
 
 
 // Trade exists of the following elements: tradeNr, accountNr, date, stock, amount, price, total
@@ -72,7 +72,7 @@ deleteTrade.validationScheme = {
 }
 
 // Router
-module.exports = () => {
+module.exports = (app) => {
     const router = new Router({prefix : '/trades'});
 
     router.get("/", validate(getAllTrades.validationScheme), getAllTrades);

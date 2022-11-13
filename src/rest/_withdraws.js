@@ -2,7 +2,7 @@ const Joi = require('joi');
 const Router = require('@koa/router');
 
 const service = require('../service/withdraw');
-const validate = require('../_validation.js');
+const validate = require('./_validation.js');
 
 // Withdraw exists of the following elements: accountNr, date, amount, accountNr and date are primary key
 // Methods: create, delete, update, find, find by accountNr, find all
@@ -78,7 +78,7 @@ deleteWithdraw.validationScheme = {
 
 // Router
 
-modeule.exports = (app) => {
+module.exports = (app) => {
     const router = new Router({prefix: '/withdraws'});
     router.get('/', validate(getAllWithdraws.validationScheme), getAllWithdraws);
     router.get('/:accountNr', validate(getByAccountNr.validationScheme), getByAccountNr);

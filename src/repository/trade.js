@@ -1,22 +1,22 @@
-const { tables, getIndex} = require('../data/index');
+const { tables, getKnex} = require('../data/index');
 const { getLogger } = require('../core/logging');
 
 
 const findAll = async () => {
-    return getKnex(tables.TRADES).select().orderBy('tradeId');
+    return getKnex()(tables.trade).select().orderBy('tradeId');
 }
 
 const findCount = async () => {
-    return await getKnex(tables.TRADES).count('*');
+    return await getKnex()(tables.trade).count('*');
 }
 
 
 const findById = async (tradeId) => {
-    return await getKnex(tables.TRADES).select().where('tradeId', tradeId).first();
+    return await getKnex()(tables.trade).select().where('tradeId', tradeId).first();
 }
 
 const create = async ({stockId, priceBought, priceSold, dateBought, dateSold, amount}) => {
-    return await getKnex(tables.TRADES).insert(
+    return await getKnex()(tables.trade).insert(
         {'stockId': stockId,
         'price bought': priceBought,
         'price sold': priceSold,
@@ -27,7 +27,7 @@ const create = async ({stockId, priceBought, priceSold, dateBought, dateSold, am
 
 const update = async (tradeId, {stockId, priceBought, priceSold, dateBought, dateSold, amount}) => {
     try {
-        await getKnex(tables.TRADES).where('tradeId', tradeId).update(
+        await getKnex()(tables.trade).where('tradeId', tradeId).update(
             {'stockId': stockId,
             'price bought': priceBought,
             'price sold': priceSold,
@@ -44,7 +44,7 @@ const update = async (tradeId, {stockId, priceBought, priceSold, dateBought, dat
 
 const deleteById = async (tradeId) => {
     try {
-        await getKnex(tables.TRADES).where('tradeId', tradeId).del();
+        await getKnex()(tables.trade).where('tradeId', tradeId).del();
     }
     catch (err) {
         const logger = getLogger();

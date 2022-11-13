@@ -2,7 +2,7 @@ const Joi = require('joi');
 const Router = require('@koa/router');
 
 const service = require('../service/account');
-const validate = require('../_validation.js');
+const validate = require('./_validation.js');
 
 
 // Create, delete, update, find by email, find by account id, find all

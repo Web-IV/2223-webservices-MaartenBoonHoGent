@@ -2,21 +2,21 @@ const { tables, getKnex} = require('../data/index');
 const { getLogger } = require('../core/logging');
 
 const findAll = async () => {
-    return await getKnex(tables.WITHDRAWS).select();
+    return await getKnex()(tables.withdraw).select();
 }
 
 const findCount = async () => {
-    return await getKnex(tables.WITHDRAWS).count('*');
+    return await getKnex()(tables.withdraw).count('*');
 }
 
 const findById = async ({date, accountNr}) => {
-    return await getKnex(tables.WITHDRAWS).select().where({'date': date,
+    return await getKnex()(tables.withdraw).select().where({'date': date,
     'accountNr': accountNr}).first();
 }
 
 const create = async ({date, accountNr, sum}) => {
     try {
-        await getKnex(tables.WITHDRAWS).insert({'date': date, 'accountNr': accountNr,'sum': sum});
+        await getKnex()(tables.withdraw).insert({'date': date, 'accountNr': accountNr,'sum': sum});
     }
     catch (err) {
         const logger = getLogger();
@@ -27,7 +27,7 @@ const create = async ({date, accountNr, sum}) => {
 
 const update = async ({date, accountNr}, {sum}) => {
     try {
-        await getKnex(tables.WITHDRAWS).where({'date': date, 'accountNr': accountNr}).update({'sum': sum});
+        await getKnex()(tables.withdraw).where({'date': date, 'accountNr': accountNr}).update({'sum': sum});
     }
     catch (err) {
         const logger = getLogger();
@@ -38,7 +38,7 @@ const update = async ({date, accountNr}, {sum}) => {
 
 const deleteById = async ({date, accountNr}) => {
     try {
-        await getKnex(tables.WITHDRAWS).where({'date': date, 'accountNr': accountNr}).del();
+        await getKnex()(tables.withdraw).where({'date': date, 'accountNr': accountNr}).del();
     }
     catch (err) {
         const logger = getLogger();

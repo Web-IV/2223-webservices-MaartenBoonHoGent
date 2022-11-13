@@ -2,7 +2,7 @@ const Joi = require('joi');
 const Router = require('@koa/router');
 
 const service = require('../service/stock');
-const validate = require('../_validation.js');
+const validate = require('./_validation.js');
 
 // Stock exists of the following elements: stockId, symbol, name, industry, sector, IPO date, date of incorporation
 // Methods: create, delete, update, find by stockId, find by symbol, find all
@@ -76,11 +76,11 @@ getBySymbol.validationScheme = {
 
 module.exports = (app) => {
     const router = new Router({ prefix: '/stocks' });
-    router.get("/", validate(getallStocks.validationScheme), getAllStocks);
+    router.get("/", validate(getAllStocks.validationScheme), getAllStocks);
     router.post("/", validate(createStock.validationScheme), createStock);
     router.put("/:stockId", validate(updateStock.validationScheme), updateStock);
     router.delete("/:stockId", validate(deleteStock.validationScheme), deleteStock);
     router.get("/:stockId", validate(getByStockId.validationScheme), getByStockId);
-    router.get("/:symbol", validate(getBySymbol.validationScheme), getBySymbol);
+    router.get("/symbol/:symbol", validate(getBySymbol.validationScheme), getBySymbol);
     app.use(router.routes()).use(router.allowedMethods());
 }

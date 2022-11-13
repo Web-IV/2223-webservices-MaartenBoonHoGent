@@ -2,7 +2,7 @@ const Joi = require('joi');
 const Router = require('@koa/router');
 
 const service = require('../service/deposit');
-const validate = require('../_validation.js');
+const validate = require('./_validation.js');
 
 
 // Deposit exists of the following elements: accountNr, date, sum, accountNr and date are primary key
