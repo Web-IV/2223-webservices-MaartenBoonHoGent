@@ -5,8 +5,8 @@ const service = require('../service/trade');
 const validate = require('./_validation.js');
 
 
-// Trade exists of the following elements: tradeNr, accountNr, date, stock, amount, price, total
-// Methods: create, delete, update, find by tradeNr, find by accountNr, find all
+// Trade exists of the following elements: tradeNr, date, stock, amount, price, total
+// Methods: create, delete, update, find by tradeNr, find all
 
 const getAllTrades = async (ctx) => {
     ctx.body = await service.getAll();
@@ -14,20 +14,11 @@ const getAllTrades = async (ctx) => {
 getAllTrades.validationScheme = null;
 
 const getByTradeNr = async (ctx) => {
-    ctx.body = await service.getByTradeNr(ctx.params.tradeNr);
+    ctx.body = await service.getById(ctx.params.tradeNr);
 }
 getByTradeNr.validationScheme = {
     params: {
         tradeNr: Joi.number().integer().positive().required(),
-    }
-}
-
-const getByAccountNr = async (ctx) => {
-    ctx.body = await service.getByAccountNr(ctx.params.accountNr);
-}
-getByAccountNr.validationScheme = {
-    params: {
-        accountNr: Joi.number().integer().positive().required(),
     }
 }
 
@@ -36,9 +27,8 @@ const createTrade = async (ctx) => {
 }
 createTrade.validationScheme = {
     body: {
-        accountNr : Joi.number().integer().positive().required(),
         date : Joi.date().required(),
-        stock : Joi.string().required(),
+        stockId : Joi.number().integer().positive().required(),
         amount : Joi.number().integer().positive().required(),
         price : Joi.number().integer().positive().required(),
         total : Joi.number().integer().positive().required(),
@@ -53,9 +43,8 @@ updateTrade.validationScheme = {
         tradeNr: Joi.number().integer().positive().required(),
     },
     body: {
-        accountNr : Joi.number().integer().positive().required(),
         date : Joi.date().required(),
-        stock : Joi.string().required(),
+        stockId : Joi.number().integer().positive().required(),
         amount : Joi.number().integer().positive().required(),
         price : Joi.number().integer().positive().required(),
         total : Joi.number().integer().positive().required(),
@@ -77,7 +66,6 @@ module.exports = (app) => {
 
     router.get("/", validate(getAllTrades.validationScheme), getAllTrades);
     router.get("/:tradeNr", validate(getByTradeNr.validationScheme), getByTradeNr);
-    router.get("/account/:accountNr", validate(getByAccountNr.validationScheme), getByAccountNr);
     router.post("/", validate(createTrade.validationScheme), createTrade);
     router.put("/:tradeNr", validate(updateTrade.validationScheme), updateTrade);
     router.delete("/:tradeNr", validate(deleteTrade.validationScheme), deleteTrade);

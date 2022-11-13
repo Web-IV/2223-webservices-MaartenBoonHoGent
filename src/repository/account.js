@@ -6,11 +6,6 @@ const findAll = async () => {
     return getKnex()(tables.account).select().orderBy('accountNr');
 }
 
-const findCount = async () => {
-    return getKnex()(tables.account).count('accountNr');
-}
-
-
 const findById = async (accountNr) => {
     return getKnex()(tables.account).select().where('accountNr', accountNr).first();
 }
@@ -63,7 +58,6 @@ const deleteById = async (accountNr) => {
 
 module.exports = {
     findAll,
-    findCount,
     findById,
     findByEmail,
     create,

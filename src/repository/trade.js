@@ -6,11 +6,6 @@ const findAll = async () => {
     return getKnex()(tables.trade).select().orderBy('tradeId');
 }
 
-const findCount = async () => {
-    return await getKnex()(tables.trade).count('*');
-}
-
-
 const findById = async (tradeId) => {
     return await getKnex()(tables.trade).select().where('tradeId', tradeId).first();
 }
@@ -55,7 +50,6 @@ const deleteById = async (tradeId) => {
 
 module.exports = {
     findAll,
-    findCount,
     findById,
     create,
     update,

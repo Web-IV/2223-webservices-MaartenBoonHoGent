@@ -9,7 +9,7 @@ const debugLog = (message, meta = {}) => {
 const getAll = async () => {
     debugLog('Fetching all deposits');
     const items = await depositRepo.findAll();
-    const count = await depositRepo.findCount();
+    const count = items.length;
     return {
       items,
       count,

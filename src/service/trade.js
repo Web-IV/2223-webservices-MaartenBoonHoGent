@@ -11,7 +11,7 @@ const debugLog = (message, meta = {}) => {
 const getAll = async () => {
     debugLog('Fetching all trades');
     const items = await tradeRepo.findAll();
-    const count = await tradeRepo.findCount();
+    const count = items.length;
     return {
         items,
         count,

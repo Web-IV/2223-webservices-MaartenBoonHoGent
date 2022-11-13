@@ -12,7 +12,7 @@ const debugLog = (message, meta = {}) => {
 const getAll = async () => {
     debugLog('Fetching all transactions');
     const items = await accountRepo.findAll();
-    const count = await accountRepo.findCount();
+    const count = items.length;
     return {
       items,
       count,

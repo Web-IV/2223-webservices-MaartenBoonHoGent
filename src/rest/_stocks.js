@@ -77,10 +77,10 @@ getBySymbol.validationScheme = {
 module.exports = (app) => {
     const router = new Router({ prefix: '/stocks' });
     router.get("/", validate(getAllStocks.validationScheme), getAllStocks);
+    router.get("/:stockId", validate(getByStockId.validationScheme), getByStockId);
+    router.get("/symbol/:symbol", validate(getBySymbol.validationScheme), getBySymbol);
     router.post("/", validate(createStock.validationScheme), createStock);
     router.put("/:stockId", validate(updateStock.validationScheme), updateStock);
     router.delete("/:stockId", validate(deleteStock.validationScheme), deleteStock);
-    router.get("/:stockId", validate(getByStockId.validationScheme), getByStockId);
-    router.get("/symbol/:symbol", validate(getBySymbol.validationScheme), getBySymbol);
     app.use(router.routes()).use(router.allowedMethods());
 }

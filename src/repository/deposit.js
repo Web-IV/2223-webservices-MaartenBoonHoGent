@@ -5,10 +5,6 @@ const findAll = async () => {
     return getKnex()(tables.deposit).select();
 }
 
-const findCount = async () => {
-    return getKnex()(tables.deposit).count('*');
-}
-
 const findById = async ({date, accountNr}) => {
     return getKnex()(tables.deposit).select().where({'date': date, 
     'accountNr': accountNr}).first();
@@ -49,7 +45,6 @@ const deleteById = async ({date, accountNr}) => {
 
 module.exports = {
     findAll,
-    findCount,
     findById,
     create,
     update,

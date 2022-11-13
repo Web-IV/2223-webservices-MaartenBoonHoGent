@@ -8,7 +8,7 @@ const debugLog = (message, meta = {}) => {
 const getAll = async () => {
     debugLog('Fetching all withdraws');
     const items = await withdrawRepo.findAll();
-    const count = await withdrawRepo.findCount();
+    const count = items.length;
     return {
         items,
         count,

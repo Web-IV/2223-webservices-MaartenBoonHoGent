@@ -5,10 +5,6 @@ const findAll = async () => {
     return getKnex()(tables.stock).select().orderBy('stockId');
 }
 
-const findCount = async () => {
-    return await getKnex()(tables.stock).count('*');
-}
-
 const findById = async (stockId) => {
     return await getKnex()(tables.stock).select().where('stockId', stockId).first();
 
@@ -65,7 +61,6 @@ const deleteById = async (stockId) => {
 
 module.exports = {
     findAll,
-    findCount,
     findById,
     findBySymbol,
     create,

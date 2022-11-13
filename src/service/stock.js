@@ -8,7 +8,7 @@ const debugLog = (message, meta = {}) => {
 const getAll = async () => {
     debugLog('Fetching all stocks');
     const items = await stockRepo.findAll();
-    const count = await stockRepo.findCount();
+    const count = items.length;
     return {
       items,
       count,
