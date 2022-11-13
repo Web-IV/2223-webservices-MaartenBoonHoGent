@@ -40,7 +40,7 @@ const deleteById = async ({accountNr, date}) => {
 }
 
 const create = async ({ accountNr, date, sum}) => {
-    debugLog(`Creating deposit with values ${JSON.stringify(deposit)}`);
+    debugLog(`Creating deposit with values ${JSON.stringify({ accountNr, date, sum})}`);
     // Get the current deposit
     const deposit = await depositRepo.findById({date, accountNr});
     if (deposit) {
@@ -48,7 +48,7 @@ const create = async ({ accountNr, date, sum}) => {
     }
     else {
         await depositRepo.create({date, accountNr, sum});
-    }
+    } 
     return getById({date, accountNr});
 }
 

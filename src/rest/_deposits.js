@@ -36,7 +36,7 @@ createDeposit.validationScheme = {
 }
 
 const updateDeposit = async (ctx) => {
-    ctx.body = await service.updateById(ctx.params.accountNr, ctx.params.date, ctx.request.body);
+    ctx.body = await service.updateById({accountNr: ctx.params.accountNr, date: ctx.params.date}, {sum: ctx.request.body.sum});
 }
 updateDeposit.validationScheme = {
     params: {
@@ -49,7 +49,7 @@ updateDeposit.validationScheme = {
 }
 
 const deleteDeposit = async (ctx) => {
-    ctx.body = await service.deleteById(ctx.params.accountNr, ctx.params.date);
+    ctx.body = await service.deleteById({accountNr: ctx.params.accountNr, date: ctx.params.date});
 }
 deleteDeposit.validationScheme = {
     params: {
