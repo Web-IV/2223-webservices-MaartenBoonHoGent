@@ -21,7 +21,7 @@ CREATE TABLE `Trade` (
 module.exports = {
     up: async (knex) => {
         await knex.schema.createTable(tables.trade, (table) => {
-            table.integer('tradeId').notNullable();
+            table.increments('tradeId').notNullable();
             table.bigInteger('stockId').unsigned().notNullable();
             table.float('price bought').unsigned().notNullable();
             table.float('price sold').unsigned().notNullable();
