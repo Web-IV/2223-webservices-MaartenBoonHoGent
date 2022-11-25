@@ -1,15 +1,38 @@
 const { tables, getKnex} = require('../data/index');
 const { getLogger } = require('../core/logging');
 
+/**
+ * Gets all deposits
+ * @returns {Promise<Array>} Array of deposits
+ */
 const findAll = async () => {
     return getKnex()(tables.deposit).select();
 }
 
+/**
+ * 
+ * @param {*} Key with date and accountNr 
+ * @returns Deposit with the given key
+ * @returns undefined if the deposit does not exist
+ * @throws Error if the deposit could not be retrieved
+ * 
+ */
 const findById = async ({date, accountNr}) => {
-    return getKnex()(tables.deposit).select().where({'date': date, 
-    'accountNr': accountNr}).first();
+    try {
+        return getKnex()(tables.deposit).select().where({'date': date, 
+        'accountNr': accountNr}).first();
+    }
+    catch (err) {
+        getLogger().error(err);
+        throw err;
+    }
 }
 
+/**
+ * Creates a new deposit
+ * @param {Object} deposit has date, accountNr and sum
+ * 
+ */
 const create = async ({date, accountNr, sum}) => {
     try {
         await getKnex()(tables.deposit).insert({'date': date, 'accountNr': accountNr,'sum': sum});
@@ -21,9 +44,18 @@ const create = async ({date, accountNr, sum}) => {
     }
 }
 
+
+/**
+ * Updates a deposit
+ * @param {*} key with date and accountNr 
+ * @param {*} sum
+ * @returns {Promise<Object>} Nothing
+ * @throws Error if the deposit could not be updated
+ */
 const update = async ({date, accountNr}, {sum}) => {
     try {
         await getKnex()(tables.deposit).where({'date': date, 'accountNr': accountNr}).update({'sum': sum});
+        // Get the deposit with the given key
     }
     catch (err) {
         const logger = getLogger();
@@ -32,6 +64,12 @@ const update = async ({date, accountNr}, {sum}) => {
     }
 }
 
+/**
+ * deletes a deposit
+ * @param {*} key with date and accountNr 
+ * @returns {Promise<Object>} Nothing
+ * @throws Error if the deposit could not be deleted
+ */
 const deleteById = async ({date, accountNr}) => {
     try {
         await getKnex()(tables.deposit).where({'date': date, 'accountNr': accountNr}).del();
