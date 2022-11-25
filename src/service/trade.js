@@ -8,6 +8,10 @@ const debugLog = (message, meta = {}) => {
     this.logger.debug(message, meta);
 };
 
+/**
+ * Returns all trades
+ * @returns {Promise<Array>} Array of trades
+ */
 const getAll = async () => {
     debugLog('Fetching all trades');
     const items = await tradeRepo.findAll();
@@ -18,55 +22,89 @@ const getAll = async () => {
     };
 }
 
+/**
+ * Get a trade by its id
+ * @param {*} tradeId 
+ * @returns {Promise<Object>} Trade
+ * @returns null if the trade does not exist
+ */
 const getById = async (tradeId) => {
     debugLog('Fetching trade by id', { tradeId });
     const trade = await tradeRepo.findById(tradeId);
     if (!trade) {
-        throw new Error(`Trade with id ${tradeId} not found`);
+        return null;
     }
     return trade;
 }
 
-const updateById = async (tradeId, {stockId, priceBought, priceSold, dateBought, dateSold, amount}) => {
+/**
+ * Updates a trade
+ * @param {*} tradeId
+ * @param {*} trade object containing the following elements: stockId, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold
+ * @returns {Promise<Object>} The updated trade
+ * @returns null if the trade or stock does not exist
+ */
+const updateById = async (tradeId, {stockId, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold}) => {
     debugLog('Updating trade by id', { tradeId });
     const trade = await tradeRepo.findById(tradeId);
     if (!trade) {
-        throw new Error(`Trade with id ${tradeId} not found`);
+        return null;
     }
-
     // Check if the stock exists
     const stock = await stockRepo.findById(stockId);
     if (!stock) {
-        throw new Error(`Stock with id ${stockId} not found`);
+        return null;
     }
-    
+
     await tradeRepo.update(tradeId, {stockId, priceBought, priceSold, dateBought, dateSold, amount});
     return getById(tradeId);
 }
 
+/**
+ * Deletes a trade
+ * @param {*} tradeId
+ * @returns True if the trade was deleted, false if the trade does not exist 
+ */
 const deleteById = async (tradeId) => {
     debugLog('Deleting trade by id', { tradeId });
     const trade = await tradeRepo.findById(tradeId);
     if (!trade) {
-        throw new Error(`Trade with id ${tradeId} not found`);
+        return false;
     }
     else {
-        await tradeRepo.deleteById(tradeId);
+        try {
+            await tradeRepo.deleteById(tradeId);
+            return true;
+        }catch(err) {
+            return false;
+        }
     }
 }
 
-const create = async ({stockId, priceBought, priceSold, dateBought, dateSold, amount}) => {
-    debugLog('Creating trade', { stockId, priceBought, priceSold, dateBought, dateSold, amount });
+/**
+ * Creates a new trade
+ * @param {*} Object containing the following elements: stockId, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold
+ * @returns The tradeId of the newly created trade
+ * @returns null if the stock does not exist
+ * @throws Error if the trade could not be created
+ */
+const create = async ({stock, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold}) => {
+    debugLog('Creating trade', { stock, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold });
     // Check if the stock exists
-    const stock = await stockRepo.findById(stockId);
-    if (!stock) {
-        throw new Error(`Stock with id ${stockId} not found`);
+    const stockFound = await stockRepo.findById(stock);
+    if (!stockFound) {
+        return null;
     }
     else {
-        tradeRepo.create({stockId, priceBought, priceSold, dateBought, dateSold, amount});
+        try {
+            const tradeId = await tradeRepo.create({stock, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold});
+            return await getById(tradeId);
+        }
+        catch (err) {
+            return null;
+        }
     }
 }
-
 module.exports = {
     getAll,
     getById,
