@@ -1,15 +1,38 @@
 const { tables, getKnex} = require('../data/index');
 const { getLogger } = require('../core/logging');
 
+/**
+ * Gets all withdraws
+ * @returns {Promise<Array>} Array of withdraws
+ */
 const findAll = async () => {
-    return await getKnex()(tables.withdraw).select();
+    return getKnex()(tables.withdraw).select();
 }
 
+/**
+ * 
+ * @param {*} Key with date and accountNr 
+ * @returns Withdraw with the given key
+ * @returns undefined if the withdraw does not exist
+ * @throws Error if the withdraw could not be retrieved
+ * 
+ */
 const findById = async ({date, accountNr}) => {
-    return await getKnex()(tables.withdraw).select().where({'date': date,
-    'accountNr': accountNr}).first();
+    try {
+        return getKnex()(tables.withdraw).select().where({'date': date, 
+        'accountNr': accountNr}).first();
+    }
+    catch (err) {
+        getLogger().error(err);
+        throw err;
+    }
 }
 
+/**
+ * Creates a new withdraw
+ * @param {Object} withdraw has date, accountNr and sum
+ * 
+ */
 const create = async ({date, accountNr, sum}) => {
     try {
         await getKnex()(tables.withdraw).insert({'date': date, 'accountNr': accountNr,'sum': sum});
@@ -21,9 +44,18 @@ const create = async ({date, accountNr, sum}) => {
     }
 }
 
+
+/**
+ * Updates a withdraw
+ * @param {*} key with date and accountNr 
+ * @param {*} sum
+ * @returns {Promise<Object>} Nothing
+ * @throws Error if the withdraw could not be updated
+ */
 const update = async ({date, accountNr}, {sum}) => {
     try {
         await getKnex()(tables.withdraw).where({'date': date, 'accountNr': accountNr}).update({'sum': sum});
+        // Get the withdraw with the given key
     }
     catch (err) {
         const logger = getLogger();
@@ -32,6 +64,12 @@ const update = async ({date, accountNr}, {sum}) => {
     }
 }
 
+/**
+ * deletes a withdraw
+ * @param {*} key with date and accountNr 
+ * @returns {Promise<Object>} Nothing
+ * @throws Error if the withdraw could not be deleted
+ */
 const deleteById = async ({date, accountNr}) => {
     try {
         await getKnex()(tables.withdraw).where({'date': date, 'accountNr': accountNr}).del();

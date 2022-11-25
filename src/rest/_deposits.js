@@ -8,11 +8,20 @@ const validate = require('./_validation.js');
 // Deposit exists of the following elements: accountNr, date, sum, accountNr and date are primary key
 // Methods: create, delete, update, find, find by accountNr, find all
 
+/**
+ * Gets all deposits
+ * @param {*} ctx 
+ */
+
 const getAllDeposits = async (ctx) => {
     ctx.body = await service.getAll();
 }
 getAllDeposits.validationScheme = null;
 
+/**
+ * Gets a deposit by its key
+ * @param {*} ctx 
+ */
 const getByKey = async (ctx) => {
     ctx.body = await service.getById({accountNr: ctx.params.accountNr, date: ctx.params.date});
 }
@@ -23,6 +32,10 @@ getByKey.validationScheme = {
     }
 }
 
+/**
+ * Creates a deposit
+ * @param {*} ctx 
+ */
 const createDeposit = async (ctx) => {
     ctx.body = await service.create(ctx.request.body);
 }
@@ -35,6 +48,10 @@ createDeposit.validationScheme = {
     }
 }
 
+/**
+ * Updates a deposit
+ * @param {*} ctx 
+ */
 const updateDeposit = async (ctx) => {
     ctx.body = await service.updateById({accountNr: ctx.params.accountNr, date: ctx.params.date}, {sum: ctx.request.body.sum});
 }
@@ -48,6 +65,11 @@ updateDeposit.validationScheme = {
     }
 }
 
+/**
+ * Deletes a deposit by its key
+ * 
+ * @param {*} ctx 
+ */
 const deleteDeposit = async (ctx) => {
     ctx.body = await service.deleteById({accountNr: ctx.params.accountNr, date: ctx.params.date});
 }
@@ -61,7 +83,6 @@ deleteDeposit.validationScheme = {
 
 
 // Router
-
 module.exports = (app) => {
     const router = new Router({ prefix: '/deposits' });
     
