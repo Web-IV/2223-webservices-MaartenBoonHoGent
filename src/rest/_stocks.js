@@ -19,10 +19,8 @@ createStock.validationScheme = {
     body: {
         symbol : Joi.string().required(),
         name : Joi.string().required(),
-        industry : Joi.string().required(),
-        sector : Joi.string().required(),
-        IPOdate : Joi.date().required(),
-        dateOfIncorporation : Joi.date().required(),
+        industry : Joi.string().required().default('Unknown'),
+        sector : Joi.string().required().default('Unknown')
     }
 }
 
@@ -36,10 +34,8 @@ updateStock.validationScheme = {
     body: {
         symbol : Joi.string().required(),
         name : Joi.string().required(),
-        industry : Joi.string().required(),
-        sector : Joi.string().required(),
-        IPOdate : Joi.date().required(),
-        dateOfIncorporation : Joi.date().required(),
+        industry : Joi.string().required().default('Unknown'),
+        sector : Joi.string().required().default('Unknown')
     }
 }
 

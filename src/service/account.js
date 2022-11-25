@@ -32,7 +32,7 @@ const getById = async (id) => {
     debugLog(`Fetching account with id ${id}`);
     const account = await accountRepo.findById(id);
 
-    if (!account) {account = null;}
+    if (!account) {return null;}
     return account;
 }
 
@@ -46,7 +46,7 @@ const getByEmail = async (eMail) => {
     debugLog(`Fetching account with eMail ${eMail}`);
     const account = await accountRepo.findByEmail(eMail);
 
-    if (!account) {account = null;}
+    if (!account) {return null;}
     return account;
 };
 
@@ -77,20 +77,40 @@ const deleteById = async (accountNr) => {
     debugLog(`Deleting account with id ${accountNr}`);
     const account = await accountRepo.findById(accountNr);
     if (!account) { return false; }
-    else {await accountRepo.deleteById(accountNr);}
-    return true;
+    else {
+        try {
+            await accountRepo.deleteById(accountNr);
+            return true;
+        }
+        catch (err) {
+            return false;
+        }
+    }
 }
 
 /**
  * Creates an account
  * @param {*} exists of the following elements: e-mail, date joined, invested sum 
- */
+ * @returns the created account
+ * @returns null if the account already exists 
+*/
 const create = async ({eMail, dateJoined, investedSum}) => {
     const account = {eMail, dateJoined, investedSum };
     debugLog(`Creating new account with values: ${JSON.stringify(account)}`);
-    const accountNr = await accountRepo.create(account);
-    // Get the account
-    return getById(accountNr);
+    // Check if the account already exists
+    const existingAccount = await accountRepo.findByEmail(eMail);
+    if (existingAccount) {
+        return null;
+    }
+    else {
+        try {
+            const accountNr = await accountRepo.create(account);
+            return getById(accountNr);
+        }
+        catch (err) {
+            return null;
+        }
+    }
 }
 
 module.exports = {
