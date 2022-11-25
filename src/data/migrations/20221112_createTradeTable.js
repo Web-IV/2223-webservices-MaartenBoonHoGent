@@ -27,6 +27,8 @@ module.exports = {
             table.float('price sold').unsigned().notNullable();
             table.timestamp('date bought').notNullable();
             table.timestamp('date sold').notNullable();
+            table.varchar('comment bought', 60).defaultTo(null);
+            table.varchar('comment sold', 60).defaultTo(null);
             table.float('amount').unsigned().notNullable();
             table.primary(['tradeId']);
         });

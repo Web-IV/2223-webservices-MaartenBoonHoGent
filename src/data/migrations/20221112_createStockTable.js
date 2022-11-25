@@ -25,8 +25,6 @@ module.exports = {
             table.string('name', 60).notNullable();
             table.string('industry', 60).defaultTo(null);
             table.string('sector', 60).defaultTo(null);
-            table.date('IPO date').defaultTo(null);
-            table.date('date of incorporation').defaultTo(null);
             table.primary(['stockId']);
         });
     },

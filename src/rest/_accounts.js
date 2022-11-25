@@ -8,26 +8,36 @@ const validate = require('./_validation.js');
 // Create, delete, update, find by email, find by account id, find all
 // Account exists of the following elements: accountNr, e-mail, date joined, invested sum, password
 
+/**
+ * Gets all accounts
+ * @param {*} ctx 
+ */
 const getAllAccounts = async (ctx) => {
     ctx.body = await service.getAll();
 };
 getAllAccounts.validationScheme = null;
 
+/**
+ * Creates an account and returns the created account
+ * @param {*} ctx 
+ */
 const createAccount = async (ctx) => {
-    await service.create({eMail: ctx.request.body.eMail, 
+    ctx.body = await service.create({eMail: ctx.request.body.eMail, 
         dateJoined: ctx.request.body.dateJoined, 
-        investedSum: ctx.request.body.investedSum, 
-        password: ctx.request.body.password});
+        investedSum: ctx.request.body.investedSum});
 }
 createAccount.validationScheme = {
     body: {
         eMail: Joi.string().email().required(),
         dateJoined: Joi.date().required(),
         investedSum: Joi.number().required(),
-        password: Joi.string().required()
     }
 }
 
+/**
+ * Updates an account and returns the updated account
+ * @param {*} ctx 
+ */
 const updateAccount = async (ctx) => {
     ctx.body = await service.updateById(ctx.params.accountNr, ctx.request.body);
 }
@@ -37,12 +47,15 @@ updateAccount.validationScheme = {
     },
     body: {
         eMail : Joi.string().email().required(),
-        password : Joi.string().required(),
         dateJoined : Joi.date().required(),
         investedSum : Joi.number().integer().positive().required(),
     }
 }
 
+/**
+ * Deletes an account and returns true if the account was deleted
+ * @param {*} ctx 
+ */
 const deleteAccount = async (ctx) => {
     ctx.body = await service.deleteById(ctx.params.accountNr);
 }
@@ -52,7 +65,10 @@ deleteAccount.validationScheme = {
     }
 }
 
-
+/**
+ * Gets an account by id
+ * @param {*} ctx 
+ */
 const getAccountById = async (ctx) => {
     ctx.body = await service.getById(ctx.params.accountNr);
 }
@@ -62,7 +78,10 @@ getAccountById.validationScheme = {
     }
 }
 
-
+/**
+ * Gets an account by email
+ * @param {*} ctx 
+ */
 const getAccountByEmail = async (ctx) => {
     ctx.body = await service.getByEmail(ctx.params.email);
 }

@@ -8,7 +8,10 @@ const debugLog = (message, meta = {}) => {
     this.logger.debug(message, meta);
 };
   
-
+/**
+ * Returns all accounts
+ * @returns {Promise<Array>} An array of accounts
+ */
 const getAll = async () => {
     debugLog('Fetching all accounts');
     const items = await accountRepo.findAll();
@@ -19,48 +22,75 @@ const getAll = async () => {
     };
 };
 
+/**
+ * Gets 1 account from the database
+ * @param {*} id 
+ * @returns the account if it exists
+ * @returns null if the account does not exist
+ */
 const getById = async (id) => {
     debugLog(`Fetching account with id ${id}`);
     const account = await accountRepo.findById(id);
 
-    if (!account) { throw new Error(`Transaction with id ${id} not found`); }
+    if (!account) {account = null;}
     return account;
 }
 
+/**
+ * 
+ * @param {*} eMail : the e-mail of the account 
+ * @returns The account if it exists
+ * @returns null if the account does not exist
+ */
 const getByEmail = async (eMail) => {
     debugLog(`Fetching account with eMail ${eMail}`);
     const account = await accountRepo.findByEmail(eMail);
 
-    if (!account) { throw new Error(`Transaction with eMail ${eMail} not found`); }
+    if (!account) {account = null;}
     return account;
 };
 
-const updateById = async (accountNr, { eMail, dateJoined, investedSum, password}) => {
-    debugLog(`Updating account with id ${accountNr}, new values: ${JSON.stringify({eMail, dateJoined, investedSum, password})}`);
+/**
+ * Updates an account
+ * @param {*} accountNr 
+ * @param {*} param: existing accountNr, e-mail, date joined, invested sum
+ * @returns the updated account
+ * @returns null if the account does not exist
+ */
+const updateById = async (accountNr, { eMail, dateJoined, investedSum}) => {
+    debugLog(`Updating account with id ${accountNr}, new values: ${JSON.stringify({eMail, dateJoined, investedSum})}`);
     
     // Find the account
     const account = await accountRepo.findById(accountNr);
-    if (!account) { throw new Error(`Account with id ${accountNr} not found`); }
-    else {
-        await accountRepo.update(accountNr, {eMail, dateJoined, investedSum, password});
-    }
-
+    if (!account) { return null; }
+    else {await accountRepo.update(accountNr, {eMail, dateJoined, investedSum});}
     return getById(accountNr);
 }
 
+/**
+ * Deletes an account
+ * @param {*} accountNr 
+ * @returns true if the account was deleted
+ * @returns false if the account does not exist
+ */
 const deleteById = async (accountNr) => {
     debugLog(`Deleting account with id ${accountNr}`);
     const account = await accountRepo.findById(accountNr);
-    if (!account) { throw new Error(`Account with id ${accountNr} not found`); }
-    else {
-        await accountRepo.deleteById(accountNr);
-    }
+    if (!account) { return false; }
+    else {await accountRepo.deleteById(accountNr);}
+    return true;
 }
 
-const create = async ({eMail, dateJoined, investedSum, password}) => {
-    const account = {eMail, dateJoined, investedSum, password };
+/**
+ * Creates an account
+ * @param {*} exists of the following elements: e-mail, date joined, invested sum 
+ */
+const create = async ({eMail, dateJoined, investedSum}) => {
+    const account = {eMail, dateJoined, investedSum };
     debugLog(`Creating new account with values: ${JSON.stringify(account)}`);
-    await accountRepo.create(account);
+    const accountNr = await accountRepo.create(account);
+    // Get the account
+    return getById(accountNr);
 }
 
 module.exports = {

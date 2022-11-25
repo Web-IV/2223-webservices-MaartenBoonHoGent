@@ -7,7 +7,6 @@ module.exports = {
             table.string('e-mail', 60).notNullable();
             table.timestamp('date joined').notNullable();
             table.bigInteger('invested sum').unsigned().notNullable().defaultTo(0);
-            table.string('password', 120).notNullable();
             table.primary(['accountNr']);
             table.unique(['e-mail']);
             table.unique(['accountNr']);

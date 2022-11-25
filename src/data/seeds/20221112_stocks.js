@@ -8,16 +8,13 @@ module.exports = {
         // Insert
         await knex(tables.stock).insert([
             {stockId: 1, symbol: 'AAPL', name: 'Apple Inc.', 
-            industry: 'Technology', sector: 'Consumer Electronics', 
-            'IPO date': '1980-12-12', 'date of incorporation': '1976-04-01'},
+            industry: 'Technology', sector: 'Consumer Electronics'},
 
             {stockId: 2, symbol: 'MSFT', name: 'Microsoft Corporation',
-            industry: 'Technology', sector: 'Software',
-            'IPO date': '1986-03-13', 'date of incorporation': '1975-04-04'},
+            industry: 'Technology', sector: 'Software'},
 
             {stockId: 3, symbol: 'AMZN', name: 'Amazon.com, Inc.',
-            industry: 'Technology', sector: 'Internet',
-            'IPO date': '1997-05-15', 'date of incorporation': '1994-07-05'}
+            industry: 'Technology', sector: 'Internet'}
         ]);
     }
 }
