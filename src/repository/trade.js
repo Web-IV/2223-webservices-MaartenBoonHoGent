@@ -38,7 +38,7 @@ const findById = async (tradeId) => {
  */
 const create = async ({stockId, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold}) => {
     try {
-        return await getKnex()(tables.trade).insert(
+        await getKnex()(tables.trade).insert(
             {'stockId': stockId,
             'price bought': priceBought,
             'price sold': priceSold,
@@ -46,7 +46,11 @@ const create = async ({stockId, priceBought, priceSold, dateBought, dateSold, am
             'date sold': dateSold,
             'amount': amount,
             'comment bought': commentBought,
-            'comment sold': commentSold}).returning('tradeId');
+            'comment sold': commentSold});
+        
+        // Return the last inserted id
+        const lastInserted = await getKnex()(tables.trade).select(getKnex().raw('LAST_INSERT_ID() as tradeId')).first();
+        return lastInserted.tradeId;
     }
     catch (err) {
         getLogger().error(err);

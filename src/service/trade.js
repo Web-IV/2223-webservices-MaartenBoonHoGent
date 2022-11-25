@@ -98,6 +98,7 @@ const create = async ({stockId, priceBought, priceSold, dateBought, dateSold, am
     else {
         try {
             const tradeId = await tradeRepo.create({stockId, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold});
+            console.log(tradeId);
             return await getById(tradeId);
         }
         catch (err) {
