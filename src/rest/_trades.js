@@ -39,7 +39,7 @@ const createTrade = async (ctx) => {
 }
 createTrade.validationScheme = {
     body: {
-        stock : Joi.number().integer().positive().required(),
+        stockId : Joi.number().integer().positive().required(),
         amount : Joi.number().integer().positive().required(),
         priceBought : Joi.number().integer().positive().required(),
         priceSold : Joi.number().integer().positive().required(),

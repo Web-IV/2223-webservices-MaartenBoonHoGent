@@ -36,10 +36,10 @@ const findById = async (tradeId) => {
  * @returns The tradeId of the newly created trade
  * @throws Error if the trade could not be created
  */
-const create = async ({stock, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold}) => {
+const create = async ({stockId, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold}) => {
     try {
         return await getKnex()(tables.trade).insert(
-            {'stockId': stock,
+            {'stockId': stockId,
             'price bought': priceBought,
             'price sold': priceSold,
             'date bought': dateBought,
@@ -60,10 +60,10 @@ const create = async ({stock, priceBought, priceSold, dateBought, dateSold, amou
  * @param {*} Object containing the following elements: stockId, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold 
  * @returns {Promise<Object>} The updated tradeId
  */
-const update = async (tradeId, {stock, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold}) => {
+const update = async (tradeId, {stockId, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold}) => {
     try {
         await getKnex()(tables.trade).where('tradeId', tradeId).update(
-            {'stockId': stock,
+            {'stockId': stockId,
             'price bought': priceBought,
             'price sold': priceSold,
             'date bought': dateBought,

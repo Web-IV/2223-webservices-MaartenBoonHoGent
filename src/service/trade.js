@@ -88,16 +88,16 @@ const deleteById = async (tradeId) => {
  * @returns null if the stock does not exist
  * @throws Error if the trade could not be created
  */
-const create = async ({stock, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold}) => {
-    debugLog('Creating trade', { stock, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold });
+const create = async ({stockId, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold}) => {
+    debugLog('Creating trade', { stockId, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold });
     // Check if the stock exists
-    const stockFound = await stockRepo.findById(stock);
+    const stockFound = await stockRepo.findById(stockId);
     if (!stockFound) {
         return null;
     }
     else {
         try {
-            const tradeId = await tradeRepo.create({stock, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold});
+            const tradeId = await tradeRepo.create({stockId, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold});
             return await getById(tradeId);
         }
         catch (err) {
