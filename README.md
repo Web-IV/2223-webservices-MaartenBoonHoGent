@@ -11,17 +11,28 @@
 Ik verwacht dat volgende software reeds geïnstalleerd is:
 
 - [NodeJS](https://nodejs.org)
+- [npm](https://www.npmjs.com)
 - [Yarn](https://yarnpkg.com)
 - [MySQL Community Server](https://dev.mysql.com/downloads/mysql/)
-- ...
+- [apidoc](http://apidocjs.com)
+- Yarn packages:
+    - `yarn add config`
+    - `yarn add env-cmd`
 
 > Vul eventueel aan
 
 ## Opstarten
 
-> Schrijf hier hoe we de applicatie starten (.env bestanden aanmaken, commando's om uit te voeren...)
-
+    .env aanmaken: bestand heeft volgende attributen
+    - NODE_ENV
+    - PORT 
+    - DATABASE_HOST
+    - DATABASE_PORT
+    - DATABASE_USERNAME
+    - DATABASE_PASSWORD
+    - DATABASE_NAME
 
 ## Testen
 
 > Schrijf hier hoe we de testen uitvoeren (.env bestanden aanmaken, commando's om uit te voeren...)
+
