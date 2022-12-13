@@ -18,6 +18,8 @@ Ik verwacht dat volgende software reeds geïnstalleerd is:
 - Yarn packages:
     - `yarn add config`
     - `yarn add env-cmd`
+    - `yarn add jest --dev`
+    - `yarn add supertest --dev`
 
 > Vul eventueel aan
 
@@ -26,6 +28,14 @@ Ik verwacht dat volgende software reeds geïnstalleerd is:
     .env aanmaken: bestand heeft volgende attributen
     - NODE_ENV
     - PORT 
+    - DATABASE_HOST
+    - DATABASE_PORT
+    - DATABASE_USERNAME
+    - DATABASE_PASSWORD
+    - DATABASE_NAME
+    .env.test aanmaken: bestand heeft volgende attributen - dit een environment voor de testen
+    - NODE_ENV
+    - PORT
     - DATABASE_HOST
     - DATABASE_PORT
     - DATABASE_USERNAME

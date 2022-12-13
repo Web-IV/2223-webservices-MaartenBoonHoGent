@@ -3,9 +3,15 @@
   "version": "1.0.0",
   "description": "> Schrap hierboven wat niet past",
   "main": "index.js",
+  "jest": {
+    "testPathIgnorePatterns": ["src", "node_modules", "config"],
+    "clearMocks": true,
+    "coverageProvider": "v8",
+    "testMatch": ["**/__tests__/**/*.spec.js" ]
+  },
   "scripts": {
     "start": "npx env-cmd nodemon src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx env-cmd -f .env.test jest"
   },
   "repository": {
     "type": "git",
@@ -34,6 +40,8 @@
     "yarn": "^1.22.19"
   },
   "devDependencies": {
-    "nodemon": "^2.0.20"
+    "jest": "^29.3.1",
+    "nodemon": "^2.0.20",
+    "supertest": "^6.3.3"
   }
 }

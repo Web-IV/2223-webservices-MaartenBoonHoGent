@@ -3,6 +3,7 @@ const Router = require('@koa/router');
 
 const service = require('../service/account');
 const validate = require('./_validation.js');
+const { response } = require('express');
 
 
 // Create, delete, update, find by email, find by account id, find all
@@ -22,9 +23,14 @@ getAllAccounts.validationScheme = null;
  * @param {*} ctx 
  */
 const createAccount = async (ctx) => {
-    ctx.body = await service.create({eMail: ctx.request.body.eMail, 
+    let response = await service.create({eMail: ctx.request.body.eMail, 
         dateJoined: ctx.request.body.dateJoined, 
         investedSum: ctx.request.body.investedSum});
+    ctx.body = response;
+    ctx.status = 201;
+    if (response == null) 
+        ctx.status = 409;
+    
 }
 createAccount.validationScheme = {
     body: {
@@ -40,6 +46,8 @@ createAccount.validationScheme = {
  */
 const updateAccount = async (ctx) => {
     ctx.body = await service.updateById(ctx.params.accountNr, ctx.request.body);
+    if (ctx.body == null)
+        ctx.status = 404;
 }
 updateAccount.validationScheme = {
     params: {
@@ -58,6 +66,8 @@ updateAccount.validationScheme = {
  */
 const deleteAccount = async (ctx) => {
     ctx.body = await service.deleteById(ctx.params.accountNr);
+    if (ctx.body == false)
+        ctx.status = 404;
 }
 deleteAccount.validationScheme = {
     params: {
@@ -70,7 +80,10 @@ deleteAccount.validationScheme = {
  * @param {*} ctx 
  */
 const getAccountById = async (ctx) => {
-    ctx.body = await service.getById(ctx.params.accountNr);
+    let response = await service.getById(ctx.params.accountNr);
+    ctx.body = response;
+    if (response == null) 
+        ctx.status = 404;
 }
 getAccountById.validationScheme = {
     params: {
@@ -84,6 +97,8 @@ getAccountById.validationScheme = {
  */
 const getAccountByEmail = async (ctx) => {
     ctx.body = await service.getByEmail(ctx.params.email);
+    if (ctx.body == null)
+        ctx.status = 404;
 }
 getAccountByEmail.validationScheme = {
     params: {
