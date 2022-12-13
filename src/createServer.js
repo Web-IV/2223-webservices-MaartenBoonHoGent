@@ -29,7 +29,7 @@ module.exports = async function createServer () {
     // Initialize the database
 	await initializeData();
 
-	console.log(`log level ${LOG_LEVEL}, logs enabled: ${LOG_DISABLED !== true}`)
+    //	console.log(`log level ${LOG_LEVEL}, logs enabled: ${LOG_DISABLED !== true}`)
 
     // CORS
     const app = new Koa();

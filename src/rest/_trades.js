@@ -23,6 +23,9 @@ getAllTrades.validationScheme = null;
  */
 const getByTradeNr = async (ctx) => {
     ctx.body = await service.getById(ctx.params.tradeNr);
+    if (ctx.body === null) 
+        ctx.status = 404;
+    
 }
 getByTradeNr.validationScheme = {
     params: {
@@ -35,18 +38,30 @@ getByTradeNr.validationScheme = {
  * @param {*} ctx 
  */
 const createTrade = async (ctx) => {
-    ctx.body = await service.create(ctx.request.body);
+    ctx.body = await service.create({
+        stockId: ctx.request.body["stockId"], 
+        amount: ctx.request.body["amount"],
+        priceBought: ctx.request.body["price bought"],
+        priceSold: ctx.request.body["price sold"],
+        dateBought: ctx.request.body["date bought"],
+        dateSold: ctx.request.body["date sold"],
+        commentBought: ctx.request.body["comment bought"],
+        commentSold: ctx.request.body["comment sold"],
+        });
+    ctx.status = 201;
+    if (ctx.body === null) 
+        ctx.status = 404;
 }
 createTrade.validationScheme = {
     body: {
         stockId : Joi.number().integer().positive().required(),
         amount : Joi.number().integer().positive().required(),
-        priceBought : Joi.number().integer().positive().required(),
-        priceSold : Joi.number().integer().positive().required(),
-        dateBought : Joi.date().required(),
-        dateSold : Joi.date().required(),
-        commentBought : Joi.string().allow(null).allow('').optional().default("No comment"),
-        commentSold : Joi.string().allow(null).allow('').optional().default("No comment"),
+        "price bought": Joi.number().integer().positive().required(),
+        "price sold": Joi.number().integer().positive().required(),
+        "date bought": Joi.date().required(),
+        "date sold": Joi.date().required(),
+        "comment bought": Joi.string().allow(null).allow('').optional().default("No comment"),
+        "comment sold": Joi.string().allow(null).allow('').optional().default("No comment"),
     }
 }
 
@@ -55,7 +70,19 @@ createTrade.validationScheme = {
  * @param {*} ctx 
  */
 const updateTrade = async (ctx) => {
-    ctx.body = await service.updateById(ctx.params.tradeNr, ctx.request.body);
+    ctx.body = await service.updateById(ctx.params.tradeNr, 
+        {
+            stockId: ctx.request.body["stockId"], 
+            amount: ctx.request.body["amount"],
+            priceBought: ctx.request.body["price bought"],
+            priceSold: ctx.request.body["price sold"],
+            dateBought: ctx.request.body["date bought"],
+            dateSold: ctx.request.body["date sold"],
+            commentBought: ctx.request.body["comment bought"],
+            commentSold: ctx.request.body["comment sold"],
+            });
+    if (ctx.body === null)
+        ctx.status = 404;
 }
 updateTrade.validationScheme = {
     params: {
@@ -64,12 +91,12 @@ updateTrade.validationScheme = {
     body: {
         stockId : Joi.number().integer().positive().required(),
         amount : Joi.number().integer().positive().required(),
-        priceBought : Joi.number().integer().positive().required(),
-        priceSold : Joi.number().integer().positive().required(),
-        dateBought : Joi.date().required(),
-        dateSold : Joi.date().required(),
-        commentBought : Joi.string().allow(null).allow('').optional().default("No comment"),
-        commentSold : Joi.string().allow(null).allow('').optional().default("No comment"),
+        "price bought": Joi.number().integer().positive().required(),
+        "price sold": Joi.number().integer().positive().required(),
+        "date bought": Joi.date().required(),
+        "date sold": Joi.date().required(),
+        "comment bought": Joi.string().allow(null).allow('').optional().default("No comment"),
+        "comment sold": Joi.string().allow(null).allow('').optional().default("No comment"),
     }
 }
 
@@ -79,6 +106,8 @@ updateTrade.validationScheme = {
  */
 const deleteTrade = async (ctx) => {
     ctx.body = await service.deleteById(ctx.params.tradeNr);
+    if (!ctx.body)
+        ctx.status = 404;
 }
 deleteTrade.validationScheme = {
     params: {

@@ -50,6 +50,8 @@ deleteStock.validationScheme = {
 
 const getByStockId = async (ctx) => {
     ctx.body = await service.getById(ctx.params.stockId);
+    if (ctx.body === null) 
+        ctx.status = 404;
 }
 
 getByStockId.validationScheme = {

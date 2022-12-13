@@ -9,8 +9,6 @@ describe('accounts', () => {
 
     // Constants
     const ACCOUNTS_URL = '/api/accounts';
-    // {accountNr: 1, 'e-mail': 'john.doe@gmail.com', 'date joined': '2022-07-01', 'invested sum': 1000.00},
-    //{accountNr: 2, 'e-mail': 'jane.doe@gmail.com', 'date joined': '2022-08-01', 'invested sum': 1000.00}
     const DATA = {
         accounts: [
             {accountNr: 1, 'e-mail': 'tom.doe@gmail.com', 'date joined': '2022-01-01', 'invested sum': 0.0},
@@ -18,6 +16,7 @@ describe('accounts', () => {
             {accountNr: 3, 'e-mail': 'sophie.doe@gmail.com', 'date joined': '2022-03-01', 'invested sum': 10000.0}
         ]
     }
+    
     /** 
      * BeforeAll function
      */
@@ -46,6 +45,14 @@ describe('accounts', () => {
      * Test case: GET /api/accounts
      */
     describe(('GET ' + ACCOUNTS_URL), () => {
+        beforeAll(async () => {
+            await beforeAll;
+        });
+
+        afterAll(async () => {
+            await afterAll;
+        });
+
         it("should return a list of accounts and a status code of 200", async () => {
             const response = await request.get(ACCOUNTS_URL);
             expect(response.status).toBe(200);
@@ -65,6 +72,14 @@ describe('accounts', () => {
      * Test case: GET /api/accounts/:accountNr
      */
     describe(('GET ' + ACCOUNTS_URL + '/:accountNr'), () => {
+        beforeAll(async () => {
+            await beforeAll;
+        });
+
+        afterAll(async () => {
+            await afterAll;
+        });
+
         it("should return a single account and a status code of 200", async () => {
             const response = await request.get(ACCOUNTS_URL + '/1');
             expect(response.status).toBe(200);
@@ -86,6 +101,14 @@ describe('accounts', () => {
      * Test case: GET /api/accounts/email/:email
      */
     describe(('GET ' + ACCOUNTS_URL + '/email/:email'), () => {
+        beforeAll(async () => {
+            await beforeAll;
+        });
+
+        afterAll(async () => {
+            await afterAll;
+        });
+
         it("should return a single account and a status code of 200", async () => {
             const response = await request.get(ACCOUNTS_URL + '/email/' + DATA.accounts[0]['e-mail']);
             expect(response.status).toBe(200);
@@ -105,6 +128,14 @@ describe('accounts', () => {
      * Test case: POST /api/accounts
     */
     describe(('POST ' + ACCOUNTS_URL), () => {
+        beforeAll(async () => {
+            await beforeAll;
+        });
+
+        afterAll(async () => {
+            await afterAll;
+        });
+
         it("should create a new account and return a status code of 201", async () => {
             const response = await request.post(ACCOUNTS_URL).send({
                 eMail: 'tommy.doe@gmail.com',
@@ -137,6 +168,14 @@ describe('accounts', () => {
      *  
     */
     describe(('PUT ' + ACCOUNTS_URL + '/:accountNr'), () => {
+        beforeAll(async () => {
+            await beforeAll;
+        });
+
+        afterAll(async () => {
+            await afterAll;
+        });
+
         it("should update an existing account and return a status code of 200", async () => {
             const dummyData = {
                     eMail: 'thomas.doe@hotmail.com',
@@ -181,6 +220,14 @@ describe('accounts', () => {
      */
 
     describe(('DELETE ' + ACCOUNTS_URL + '/:accountNr'), () => {
+        beforeAll(async () => {
+            await beforeAll;
+        });
+
+        afterAll(async () => {
+            await afterAll;
+        });
+
         it("should delete an existing account and return a status code of 200", async () => {
             const response = await request.delete(ACCOUNTS_URL + '/1');
             expect(response.status).toBe(200);

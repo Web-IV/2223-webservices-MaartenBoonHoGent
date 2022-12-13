@@ -45,7 +45,7 @@ const getById = async (tradeId) => {
  * @returns null if the trade or stock does not exist
  */
 const updateById = async (tradeId, {stockId, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold}) => {
-    debugLog('Updating trade by id', { tradeId });
+    debugLog('Updating trade by id' + { tradeId } + `with values ${stockId, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold}`);
     const trade = await tradeRepo.findById(tradeId);
     if (!trade) {
         return null;
@@ -56,7 +56,7 @@ const updateById = async (tradeId, {stockId, priceBought, priceSold, dateBought,
         return null;
     }
 
-    await tradeRepo.update(tradeId, {stockId, priceBought, priceSold, dateBought, dateSold, amount});
+    await tradeRepo.update(tradeId, {stockId, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold});
     return getById(tradeId);
 }
 
@@ -86,7 +86,6 @@ const deleteById = async (tradeId) => {
  * @param {*} Object containing the following elements: stockId, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold
  * @returns The tradeId of the newly created trade
  * @returns null if the stock does not exist
- * @throws Error if the trade could not be created
  */
 const create = async ({stockId, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold}) => {
     debugLog('Creating trade', { stockId, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold });
@@ -98,7 +97,6 @@ const create = async ({stockId, priceBought, priceSold, dateBought, dateSold, am
     else {
         try {
             const tradeId = await tradeRepo.create({stockId, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold});
-            console.log(tradeId);
             return await getById(tradeId);
         }
         catch (err) {
