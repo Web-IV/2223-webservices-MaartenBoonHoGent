@@ -14,6 +14,9 @@ getAllStocks.validationScheme = null;
 
 const createStock = async (ctx) => {
     ctx.body = await service.create(ctx.request.body);
+    ctx.status = 201;
+    if (ctx.body === null)
+        ctx.status = 404;
 }
 createStock.validationScheme = {
     body: {
@@ -26,6 +29,8 @@ createStock.validationScheme = {
 
 const updateStock = async (ctx) => {
     ctx.body = await service.updateById(ctx.params.stockId, ctx.request.body);
+    if (ctx.body === null)
+        ctx.status = 404;
 }
 updateStock.validationScheme = {
     params: {
@@ -41,6 +46,7 @@ updateStock.validationScheme = {
 
 const deleteStock = async (ctx) => {
     ctx.body = await service.deleteById(ctx.params.stockId);
+    if (!ctx.body) { ctx.status = 404; }    
 }
 deleteStock.validationScheme = {
     params: {
@@ -62,6 +68,8 @@ getByStockId.validationScheme = {
 
 const getBySymbol = async (ctx) => {
     ctx.body = await service.getBySymbol(ctx.params.symbol);
+    if (ctx.body === null)
+        ctx.status = 404;
 }
 
 getBySymbol.validationScheme = {

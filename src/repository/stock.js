@@ -99,7 +99,7 @@ const update = async (stockId, {symbol, name, industry, sector}) => {
  */
 const deleteById = async (stockId) => {
     try {
-        await getKnex()(tables.stock).where('stockId', stockId).del();   
+        await getKnex()(tables.stock).where('stockId', stockId).del();
     }
     catch (err) {
         const logger = getLogger();
