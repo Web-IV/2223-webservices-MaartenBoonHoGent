@@ -12,7 +12,7 @@ const findAll = async () => {
 /**
  * 
  * @param {*} Key with date and accountNr 
- * @returns Withdraw with the given key
+ * @returns Deposit with the given key
  * @returns undefined if the withdraw does not exist
  * @throws Error if the withdraw could not be retrieved
  * 
