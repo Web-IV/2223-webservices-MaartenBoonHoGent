@@ -6,13 +6,22 @@ const validate = require('./_validation.js');
 const { response } = require('express');
 
 
-// Create, delete, update, find by email, find by account id, find all
+// Create, delete, update, find by "e-mail", find by account id, find all
 // Account exists of the following elements: accountNr, e-mail, date joined, invested sum, password
 
 /**
  * Gets all accounts
  * @param {*} ctx 
  */
+
+const formatInput = (ctx) => {
+    return {
+        eMail: ctx.request.body["e-mail"],
+        dateJoined: ctx.request.body["date joined"],
+        investedSum: ctx.request.body["invested sum"]
+    }
+}
+
 const getAllAccounts = async (ctx) => {
     ctx.body = await service.getAll();
 };
@@ -23,9 +32,7 @@ getAllAccounts.validationScheme = null;
  * @param {*} ctx 
  */
 const createAccount = async (ctx) => {
-    let response = await service.create({eMail: ctx.request.body.eMail, 
-        dateJoined: ctx.request.body.dateJoined, 
-        investedSum: ctx.request.body.investedSum});
+    let response = await service.create(formatInput(ctx));
     ctx.body = response;
     ctx.status = 201;
     if (response == null) 
@@ -34,9 +41,9 @@ const createAccount = async (ctx) => {
 }
 createAccount.validationScheme = {
     body: {
-        eMail: Joi.string().email().required(),
-        dateJoined: Joi.date().required(),
-        investedSum: Joi.number().required(),
+        "e-mail": Joi.string().email().required(),
+        "date joined": Joi.date().raw().required(),
+        "invested sum": Joi.number().required(),
     }
 }
 
@@ -45,7 +52,7 @@ createAccount.validationScheme = {
  * @param {*} ctx 
  */
 const updateAccount = async (ctx) => {
-    ctx.body = await service.updateById(ctx.params.accountNr, ctx.request.body);
+    ctx.body = await service.updateById(ctx.params.accountNr, formatInput(ctx));
     if (ctx.body == null)
         ctx.status = 404;
 }
@@ -54,9 +61,9 @@ updateAccount.validationScheme = {
         accountNr: Joi.number().integer().positive().required(),
     },
     body: {
-        eMail : Joi.string().email().required(),
-        dateJoined : Joi.date().required(),
-        investedSum : Joi.number().integer().positive().required(),
+        "e-mail" : Joi.string().email().required(),
+        "date joined" : Joi.date().required(),
+        "invested sum" : Joi.number().integer().positive().required(),
     }
 }
 
@@ -92,7 +99,7 @@ getAccountById.validationScheme = {
 }
 
 /**
- * Gets an account by email
+ * Gets an account by e-mail
  * @param {*} ctx 
  */
 const getAccountByEmail = async (ctx) => {
@@ -112,7 +119,7 @@ module.exports = (app) => {
 
     router.get('/', validate(getAllAccounts.validationScheme), getAllAccounts);
     router.get('/:accountNr', validate(getAccountById.validationScheme), getAccountById);
-    router.get('/email/:email', validate(getAccountByEmail.validationScheme), getAccountByEmail);
+    router.get('/e-mail/:email', validate(getAccountByEmail.validationScheme), getAccountByEmail);
     router.post('/', validate(createAccount.validationScheme), createAccount);
     router.put('/:accountNr', validate(updateAccount.validationScheme), updateAccount);
     router.delete('/:accountNr', validate(deleteAccount.validationScheme), deleteAccount);

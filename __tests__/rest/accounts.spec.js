@@ -11,9 +11,9 @@ describe('accounts', () => {
     const ACCOUNTS_URL = '/api/accounts';
     const DATA = {
         accounts: [
-            {accountNr: 1, 'e-mail': 'tom.doe@gmail.com', 'date joined': '2022-01-01', 'invested sum': 0.0},
-            {accountNr: 2, 'e-mail': 'pip.doe@gmail.com', 'date joined': '2022-02-01', 'invested sum': 5000.0},
-            {accountNr: 3, 'e-mail': 'sophie.doe@gmail.com', 'date joined': '2022-03-01', 'invested sum': 10000.0}
+            {accountNr: 1, 'e-mail': 'tom.doe@gmail.com', 'date joined': '2022-01-01 00:00:00', 'invested sum': 0.0}, // Timestamp: 1640991600
+            {accountNr: 2, 'e-mail': 'pip.doe@gmail.com', 'date joined': '2022-02-01 00:00:00', 'invested sum': 5000.0}, // Timestamp: 1643670000
+            {accountNr: 3, 'e-mail': 'sophie.doe@gmail.com', 'date joined': '2022-03-01 00:00:00', 'invested sum': 10000.0} // Timestamp: 1646089200
         ]
     }
     
@@ -100,7 +100,7 @@ describe('accounts', () => {
     /** 
      * Test case: GET /api/accounts/email/:email
      */
-    describe(('GET ' + ACCOUNTS_URL + '/email/:email'), () => {
+    describe(('GET ' + ACCOUNTS_URL + '/e-mail/:e-mail'), () => {
         beforeAll(async () => {
             await beforeAll;
         });
@@ -110,7 +110,7 @@ describe('accounts', () => {
         });
 
         it("should return a single account and a status code of 200", async () => {
-            const response = await request.get(ACCOUNTS_URL + '/email/' + DATA.accounts[0]['e-mail']);
+            const response = await request.get(ACCOUNTS_URL + '/e-mail/' + DATA.accounts[0]['e-mail']);
             expect(response.status).toBe(200);
             expect(response.body['accountNr']).toEqual(DATA.accounts[0].accountNr);
             expect(response.body['e-mail']).toEqual(DATA.accounts[0]['e-mail']);
@@ -138,9 +138,9 @@ describe('accounts', () => {
 
         it("should create a new account and return a status code of 201", async () => {
             const response = await request.post(ACCOUNTS_URL).send({
-                eMail: 'tommy.doe@gmail.com',
-                dateJoined: '2022-05-05',
-                investedSum: 1000.0
+                "e-mail": 'tommy.doe@gmail.com',
+                "date joined": 1651701600,
+                "invested sum": 1000.0
             });
             expect(response.status).toBe(201);
             //expect(response.body['accountNr']).toEqual(4);
@@ -152,9 +152,9 @@ describe('accounts', () => {
         // Attempt to create an account with an existing e-mail
         it("should return a status code of 409 if the accountNr already exists", async () => {
             const response = await request.post(ACCOUNTS_URL).send({
-                eMail: 'tom.doe@gmail.com',
-                dateJoined: '2022-05-05',
-                investedSum: 1000.0
+                "e-mail": 'tom.doe@gmail.com',
+                "date joined": 1651701600,
+                "invested sum": 1000.0
             });
             
             expect(response.status).toBe(409);
@@ -178,22 +178,22 @@ describe('accounts', () => {
 
         it("should update an existing account and return a status code of 200", async () => {
             const dummyData = {
-                    eMail: 'thomas.doe@hotmail.com',
-                    dateJoined: '2022-05-05',
-                    investedSum: 5000.0
+                    "e-mail": 'thomas.doe@hotmail.com',
+                    "date joined": 1651701600,
+                    "invested sum": 5000.0
                 };
             const response = await request.put(ACCOUNTS_URL + '/1').send(dummyData);
             expect(response.status).toBe(200);
             expect(response.body['accountNr']).toEqual(1);
-            expect(response.body['e-mail']).toEqual(dummyData.eMail);
-            expect(response.body['invested sum']).toEqual(dummyData.investedSum);
+            expect(response.body['e-mail']).toEqual(dummyData['e-mail']);
+            expect(response.body['invested sum']).toEqual(dummyData['invested sum']);
         });
         // Attempt to update a non-existing account
         it("should return a status code of 404 if the account does not exist", async () => {
             const dummyData = {
-                eMail: 'thomas.doe@hotmail.com',
-                dateJoined: '2022-05-05',
-                investedSum: 5000.0
+                "e-mail": 'thomas.doe@hotmail.com',
+                "date joined": 1651701600,
+                "invested sum": 5000.0
             };
             const response = await request.put(ACCOUNTS_URL + '/9999').send(dummyData);
             expect(response.status).toBe(404);
@@ -203,9 +203,9 @@ describe('accounts', () => {
         // Attempt to update an account with an existing e-mail
         it("should return a status code of 409 if the e-mail already exists", async () => {
             const dummyData = {
-                eMail: 'tom.doe@gmail.com',
-                dateJoined: '2022-05-05',
-                investedSum: 5000.0
+                "e-mail": 'tom.doe@gmail.com',
+                "date joined": 1651701600,
+                "invested sum": 5000.0
             };
             const response = await request.put(ACCOUNTS_URL + '/9999').send(dummyData);
             expect(response.status).toBe(404);

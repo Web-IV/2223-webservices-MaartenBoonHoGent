@@ -3,6 +3,27 @@ const { getLogger } = require('../core/logging');
 
 // Account exists of the following elements: accountNr, e-mail, date joined, invested sum, password
 
+const formatOutgoingAccount = (account) => {
+    if (!account) return null;
+    if (account === undefined) return null;
+    return {
+        accountNr: account.accountNr,
+        ["e-mail"]: account["e-mail"],
+        ["date joined"]: Math.floor(new Date(account["date joined"]).getTime() / 1000),
+        ["invested sum"]: account["invested sum"],
+    };
+}
+
+const formatIncomingAccount = (account) => {
+    if (!account) return null;
+    if (account === undefined) return null;
+    return {
+        eMail: account.eMail,
+        dateJoined: new Date(account.dateJoined * 1000),
+        investedSum: account.investedSum,
+    };
+}
+
 const debugLog = (message, meta = {}) => {
     if (!this.logger) this.logger = getLogger();
     this.logger.debug(message, meta);
@@ -31,9 +52,7 @@ const getAll = async () => {
 const getById = async (id) => {
     debugLog(`Fetching account with id ${id}`);
     const account = await accountRepo.findById(id);
-
-    if (!account) {return null;}
-    return account;
+    return formatOutgoingAccount(account);
 }
 
 /**
@@ -45,9 +64,7 @@ const getById = async (id) => {
 const getByEmail = async (eMail) => {
     debugLog(`Fetching account with eMail ${eMail}`);
     const account = await accountRepo.findByEmail(eMail);
-
-    if (!account) {return null;}
-    return account;
+    return formatOutgoingAccount(account);
 };
 
 /**
@@ -63,7 +80,7 @@ const updateById = async (accountNr, { eMail, dateJoined, investedSum}) => {
     // Find the account
     const account = await accountRepo.findById(accountNr);
     if (!account) { return null; }
-    else {await accountRepo.update(accountNr, {eMail, dateJoined, investedSum});}
+    else {await accountRepo.update(accountNr, formatIncomingAccount({eMail, dateJoined, investedSum}));}
     return getById(accountNr);
 }
 
@@ -104,7 +121,7 @@ const create = async ({eMail, dateJoined, investedSum}) => {
     }
     else {
         try {
-            const accountNr = await accountRepo.create(account);
+            const accountNr = await accountRepo.create(formatIncomingAccount(account));
             return getById(accountNr);
         }
         catch (err) {
