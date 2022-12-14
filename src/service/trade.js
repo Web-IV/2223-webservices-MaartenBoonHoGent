@@ -8,13 +8,45 @@ const debugLog = (message, meta = {}) => {
     this.logger.debug(message, meta);
 };
 
+const formatOutgoingTrade = (trade) => {
+    if (!trade) return null;
+    if (trade === undefined) return null;
+    return {
+        tradeId: trade.tradeId,
+        stockId: trade.stockId,
+        "price bought": trade["price bought"],
+        "price sold": trade["price sold"],
+        "date bought": Math.floor(new Date(trade["date bought"]).getTime() / 1000),
+        "date sold": Math.floor(new Date(trade["date sold"]).getTime() / 1000),
+        amount: trade.amount,
+        "comment bought": trade["comment bought"],
+        "comment sold": trade["comment sold"],
+    };
+}
+
+const formatIncomingTrade = (trade) => {
+    if (!trade) return null;
+    if (trade === undefined) return null;
+    return {
+        stockId: trade.stockId,
+        priceBought: trade.priceBought,
+        priceSold: trade.priceSold,
+        dateBought: new Date(trade.dateBought * 1000),
+        dateSold: new Date(trade.dateSold * 1000),
+        amount: trade.amount,
+        commentBought: trade.commentBought,
+        commentSold: trade.commentSold,
+    };
+}
+
 /**
  * Returns all trades
  * @returns {Promise<Array>} Array of trades
  */
 const getAll = async () => {
     debugLog('Fetching all trades');
-    const items = await tradeRepo.findAll();
+    let items = await tradeRepo.findAll();
+    items = items.map(formatOutgoingTrade);
     const count = items.length;
     return {
         items,
@@ -31,10 +63,7 @@ const getAll = async () => {
 const getById = async (tradeId) => {
     debugLog('Fetching trade by id', { tradeId });
     const trade = await tradeRepo.findById(tradeId);
-    if (!trade) {
-        return null;
-    }
-    return trade;
+    return formatOutgoingTrade(trade);
 }
 
 /**
@@ -56,7 +85,7 @@ const updateById = async (tradeId, {stockId, priceBought, priceSold, dateBought,
         return null;
     }
 
-    await tradeRepo.update(tradeId, {stockId, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold});
+    await tradeRepo.update(tradeId, formatIncomingTrade({stockId, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold}));
     return getById(tradeId);
 }
 
@@ -96,7 +125,7 @@ const create = async ({stockId, priceBought, priceSold, dateBought, dateSold, am
     }
     else {
         try {
-            const tradeId = await tradeRepo.create({stockId, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold});
+            const tradeId = await tradeRepo.create(formatIncomingTrade({stockId, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold}));
             return await getById(tradeId);
         }
         catch (err) {

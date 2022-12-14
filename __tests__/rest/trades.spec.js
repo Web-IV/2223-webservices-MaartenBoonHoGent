@@ -12,15 +12,15 @@ describe('trades', () => {
     const DATA = {
         trades: [{tradeId: 1, stockId: 1, 
             "price bought": 100.00, "price sold": 101.00, 
-            "date bought": '2022-08-01', "date sold": '2022-08-02', amount: 10, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'},
+            "date bought": '2022-08-01 00:00:00', "date sold": '2022-08-02 00:00:00', amount: 10, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'},
 
         {tradeId: 2, stockId: 2,
             "price bought": 200.00, "price sold": 201.00,
-            "date bought": '2022-08-02', "date sold": '2022-08-03', amount: 10, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'},
+            "date bought": '2022-08-02 00:00:00', "date sold": '2022-08-03 00:00:00', amount: 10, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'},
         
         {tradeId: 3, stockId: 1,
             "price bought": 102.00, "price sold": 100.00,
-            "date bought": '2022-08-03', "date sold": '2022-08-04', amount: 10, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'}],
+            "date bought": '2022-08-03 00:00:00', "date sold": '2022-08-04 00:00:00', amount: 10, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'}],
         stocks: [{stockId: 1, symbol: 'AAPL', name: 'Apple Inc.', 
         industry: 'Technology', sector: 'Consumer Electronics'},
 
@@ -29,8 +29,7 @@ describe('trades', () => {
 
         {stockId: 3, symbol: 'AMZN', name: 'Amazon.com, Inc.',
         industry: 'Technology', sector: 'Internet'}],
-    };
-    
+    }; 
     beforeAll(async () => {
         server = await createServer(); // create the server
         request = supertest(server.getApp().callback()); // Perform a supertest request
@@ -139,7 +138,7 @@ describe('trades', () => {
             const trade = {
                 stockId: 2,
                 "price bought": 100.00, "price sold": 101.00,
-                "date bought": '2022-08-01', "date sold": '2022-08-02', amount: 50, "comment bought": 'bought 50 shares', "comment sold": 'sold 50 shares'
+                "date bought": 1659304800, "date sold": 1659391200, amount: 50, "comment bought": 'bought 50 shares', "comment sold": 'sold 50 shares'
             };
             const response = await request.post(TRADES_URL).send(trade);
             expect(response.status).toBe(201);
@@ -156,7 +155,7 @@ describe('trades', () => {
             const trade = {
                 stockId: 100,
                 "price bought": 100.00, "price sold": 101.00,
-                "date bought": '2022-08-01', "date sold": '2022-08-02', amount: 10, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'
+                "date bought": 1640991600, "date sold": 1641078000, amount: 10, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'
             };
             const response = await request.post(TRADES_URL).send(trade);
             expect(response.status).toBe(404);
@@ -168,7 +167,7 @@ describe('trades', () => {
             const trade = {
                 stockId: 2,
                 "price bought": -1, "price sold": 101.00,
-                "date bought": '2022-08-01', "date sold": '2022-08-02', amount: 10, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'
+                "date bought": 1640991600, "date sold": 1641078000, amount: 10, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'
             };
             const response = await request.post(TRADES_URL).send(trade);
             expect(response.status).toBe(400);
@@ -180,7 +179,7 @@ describe('trades', () => {
             const trade = {
                 stockId: 2,
                 "price bought": 100.00, "price sold": -1,
-                "date bought": '2022-08-01', "date sold": '2022-08-02', amount: 10, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'
+                "date bought": 1640991600, "date sold": 1641078000, amount: 10, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'
             };
             const response = await request.post(TRADES_URL).send(trade);
             expect(response.status).toBe(400);
@@ -192,7 +191,7 @@ describe('trades', () => {
             const trade = {
                 stockId: 2,
                 "price bought": 100.00, "price sold": 101.00,
-                "date bought": '2022-08-01', "date sold": '2022-08-02', amount: -1, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'
+                "date bought": 1640991600, "date sold": 1641078000, amount: -1, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'
             };
             const response = await request.post(TRADES_URL).send(trade);
             expect(response.status).toBe(400);
@@ -204,7 +203,7 @@ describe('trades', () => {
             const trade = {
                 stockId: 2,
                 "price bought": 100.00, "price sold": 101.00,
-                "date bought": '2022-08-01', "date sold": '2022-08-02', amount: 10, "comment bought": '', "comment sold": 'sold 10 shares'
+                "date bought": 1640991600, "date sold": 1641078000, amount: 10, "comment bought": '', "comment sold": 'sold 10 shares'
             };
             const response = await request.post(TRADES_URL).send(trade);
             expect(response.status).toBe(201);
@@ -221,7 +220,7 @@ describe('trades', () => {
             const trade = {
                 stockId: 2,
                 "price bought": 100.00, "price sold": 101.00,
-                "date bought": '2022-08-01', "date sold": '2022-08-02', amount: 10, "comment bought": 'bought 10 shares', "comment sold": ''
+                "date bought": 1640991600, "date sold": 1641078000, amount: 10, "comment bought": 'bought 10 shares', "comment sold": ''
             };
             const response = await request.post(TRADES_URL).send(trade);
             expect(response.status).toBe(201);
@@ -253,7 +252,7 @@ describe('trades', () => {
             const trade = {
                 stockId: 1,
                 "price bought": 100.00, "price sold": 101.00,
-                "date bought": '2022-08-01', "date sold": '2022-08-02', amount: 10, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'
+                "date bought": 1640991600, "date sold": 1641078000, amount: 10, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'
             };
             const response = await request.put(TRADES_URL + "/1").send(trade);
             expect(response.status).toBe(200);
@@ -270,7 +269,7 @@ describe('trades', () => {
             const trade = {
                 stockId: 1,
                 "price bought": 100.00, "price sold": 101.00,
-                "date bought": '2022-08-01', "date sold": '2022-08-02', amount: 10, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'
+                "date bought": 1640991600, "date sold": 1641078000, amount: 10, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'
             };
             const response = await request.put(TRADES_URL + "/100").send(trade);
             expect(response.status).toBe(404);
@@ -282,7 +281,7 @@ describe('trades', () => {
             const trade = {
                 stockId: 100,
                 "price bought": 100.00, "price sold": 101.00,
-                "date bought": '2022-08-01', "date sold": '2022-08-02', amount: 10, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'
+                "date bought": 1640991600, "date sold": 1641078000, amount: 10, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'
             };
             const response = await request.put(TRADES_URL + "/1").send(trade);
             expect(response.status).toBe(404);
@@ -294,7 +293,7 @@ describe('trades', () => {
             const trade = {
                 stockId: 1,
                 "price bought": -100.00, "price sold": 101.00,
-                "date bought": '2022-08-01', "date sold": '2022-08-02', amount: 10, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'
+                "date bought": 1640991600, "date sold": 1641078000, amount: 10, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'
             };
             const response = await request.put(TRADES_URL + "/1").send(trade);
             expect(response.status).toBe(400);
@@ -307,7 +306,7 @@ describe('trades', () => {
             const trade = {
                 stockId: 1,
                 "price bought": 100.00, "price sold": -101.00,
-                "date bought": '2022-08-01', "date sold": '2022-08-02', amount: 10, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'
+                "date bought": 1640991600, "date sold": 1641078000, amount: 10, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'
             };
             const response = await request.put(TRADES_URL + "/1").send(trade);
             expect(response.status).toBe(400);
@@ -320,7 +319,7 @@ describe('trades', () => {
             const trade = {
                 stockId: 1,
                 "price bought": 100.00, "price sold": 101.00,
-                "date bought": '2022-08-01', "date sold": '2022-08-02', amount: -10, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'
+                "date bought": 1640991600, "date sold": 1641078000, amount: -10, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'
             };
             const response = await request.put(TRADES_URL + "/1").send(trade);
             expect(response.status).toBe(400);
@@ -333,7 +332,7 @@ describe('trades', () => {
             const trade = {
                 stockId: 1,
                 "price bought": 100.00, "price sold": 101.00,
-                "date bought": '2022-08-01', "date sold": '2022-08-02', amount: 10, "comment bought": '', "comment sold": 'sold 10 shares'
+                "date bought": 1640991600, "date sold": 1641078000, amount: 10, "comment bought": '', "comment sold": 'sold 10 shares'
             };
             const response = await request.put(TRADES_URL + "/1").send(trade);
             expect(response.status).toBe(200);
@@ -352,7 +351,7 @@ describe('trades', () => {
             const trade = {
                 stockId: 1,
                 "price bought": 100.00, "price sold": 101.00,
-                "date bought": '2022-08-01', "date sold": '2022-08-02', amount: 10, "comment bought": 'bought 10 shares', "comment sold": ''
+                "date bought": 1640991600, "date sold": 1641078000, amount: 10, "comment bought": 'bought 10 shares', "comment sold": ''
             };
             const response = await request.put(TRADES_URL + "/1").send(trade);
             expect(response.status).toBe(200);

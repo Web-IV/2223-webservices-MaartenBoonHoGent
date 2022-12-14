@@ -58,8 +58,8 @@ createTrade.validationScheme = {
         amount : Joi.number().integer().positive().required(),
         "price bought": Joi.number().integer().positive().required(),
         "price sold": Joi.number().integer().positive().required(),
-        "date bought": Joi.date().required(),
-        "date sold": Joi.date().required(),
+        "date bought": Joi.date().raw().required(),
+        "date sold": Joi.date().raw().required(),
         "comment bought": Joi.string().allow(null).allow('').optional().default("No comment"),
         "comment sold": Joi.string().allow(null).allow('').optional().default("No comment"),
     }
@@ -93,8 +93,8 @@ updateTrade.validationScheme = {
         amount : Joi.number().integer().positive().required(),
         "price bought": Joi.number().integer().positive().required(),
         "price sold": Joi.number().integer().positive().required(),
-        "date bought": Joi.date().required(),
-        "date sold": Joi.date().required(),
+        "date bought": Joi.date().raw().required(),
+        "date sold": Joi.date().raw().required(),
         "comment bought": Joi.string().allow(null).allow('').optional().default("No comment"),
         "comment sold": Joi.string().allow(null).allow('').optional().default("No comment"),
     }
