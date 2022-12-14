@@ -7,13 +7,31 @@ const debugLog = (message, meta = {}) => {
     this.logger.debug(message, meta);
 };
 
+const formatOutgoingDeposit = (deposit) => {
+    if (!deposit) return null;
+    if (deposit === undefined) return null;
+    return {
+        accountNr: deposit.accountNr,
+        date: Math.floor(new Date(deposit.date).getTime() / 1000),
+        sum: deposit.sum
+    };
+}
+
+const formatIncomingDate = (date) => {
+    if (!date) return null;
+    if (date === undefined) return null;
+    //  is currently timestamp in seconds
+    return new Date(date * 1000); 
+}
+
 /**
  * 
  * @returns All deposits
  */
 const getAll = async () => {
     debugLog('Fetching all deposits');
-    const items = await depositRepo.findAll();
+    let items = await depositRepo.findAll();
+    items = items.map(formatOutgoingDeposit);
     const count = items.length;
     return {
       items,
@@ -30,11 +48,10 @@ const getAll = async () => {
  */
 const getById = async ({accountNr, date}) => {
     debugLog(`Fetching deposit with key ${date} and ${accountNr}`);
-    
-    try {
+    date = formatIncomingDate(date);    
+    try {   
         const deposit = await depositRepo.findById({date, accountNr});
-        if (!deposit) { return null; }
-        return deposit;
+        return formatOutgoingDeposit(deposit);
     }
     catch (err) {
         const logger = getLogger();
@@ -52,9 +69,11 @@ const getById = async ({accountNr, date}) => {
  */
 const updateById = async ({accountNr, date}, {sum}) => {
     try {
+        const originalDate = date;
         debugLog(`Updating deposit with key ${date} and ${accountNr}, new values: ${JSON.stringify({sum})}`);
+        date = formatIncomingDate(date);
         await depositRepo.update({date, accountNr}, {sum});
-        return getById({date, accountNr});
+        return getById({date: originalDate, accountNr});
     }
     catch (err) {
         const logger = getLogger();
@@ -72,6 +91,7 @@ const updateById = async ({accountNr, date}, {sum}) => {
  */
 const deleteById = async ({accountNr, date}) => {
     debugLog(`Deleting deposit with key ${date} and ${accountNr}`);
+    date = formatIncomingDate(date);
     const deposit = await depositRepo.findById({date, accountNr});
     if (!deposit) { return false; }
     else {
@@ -96,9 +116,10 @@ const deleteById = async ({accountNr, date}) => {
 const create = async ({ accountNr, date, sum}) => {
     debugLog(`Creating deposit with values ${JSON.stringify({ accountNr, date, sum})}`);
     // Get the current deposit
+    const originalDate = date;
+    date = formatIncomingDate(date);
     const deposit = await depositRepo.findById({date, accountNr});
     if (deposit) {return null;}
-
     else {
         // Check if the account exists
         const account = await accountRepo.findById(accountNr);
@@ -108,7 +129,7 @@ const create = async ({ accountNr, date, sum}) => {
         else {
             try {
                 await depositRepo.create({accountNr, date, sum});
-                return getById({date, accountNr});
+                return getById({date:originalDate, accountNr});
             }
             catch (err) {
                 const logger = getLogger();

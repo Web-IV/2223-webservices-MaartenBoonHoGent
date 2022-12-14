@@ -24,11 +24,13 @@ getAllDeposits.validationScheme = null;
  */
 const getByKey = async (ctx) => {
     ctx.body = await service.getById({accountNr: ctx.params.accountNr, date: ctx.params.date});
+    if (!ctx.body)
+        ctx.status = 404;
 }
 getByKey.validationScheme = {
     params: {
         accountNr: Joi.number().integer().positive().required(),
-        date: Joi.date().required(),
+        date: Joi.date().raw().required(),
     }
 }
 
@@ -38,12 +40,17 @@ getByKey.validationScheme = {
  */
 const createDeposit = async (ctx) => {
     ctx.body = await service.create(ctx.request.body);
+
+    if (ctx.body === null)
+        ctx.status = 404;
+    else
+        ctx.status = 201;
 }
 
 createDeposit.validationScheme = {
     body: {
         accountNr : Joi.number().integer().positive().required(),
-        date : Joi.date().required(),
+        date : Joi.date().raw().required(),
         sum : Joi.number().integer().positive().required(),
     }
 }
@@ -54,11 +61,13 @@ createDeposit.validationScheme = {
  */
 const updateDeposit = async (ctx) => {
     ctx.body = await service.updateById({accountNr: ctx.params.accountNr, date: ctx.params.date}, {sum: ctx.request.body.sum});
+    if (!ctx.body)
+        ctx.status = 404;
 }
 updateDeposit.validationScheme = {
     params: {
         accountNr: Joi.number().integer().positive().required(),
-        date: Joi.date().required(),
+        date: Joi.date().raw().required(),
     },
     body: {
         sum : Joi.number().integer().positive().required(),
@@ -72,11 +81,14 @@ updateDeposit.validationScheme = {
  */
 const deleteDeposit = async (ctx) => {
     ctx.body = await service.deleteById({accountNr: ctx.params.accountNr, date: ctx.params.date});
+    if (!ctx.body)
+        ctx.status = 404;
+
 }
 deleteDeposit.validationScheme = {
     params: {
         accountNr: Joi.number().integer().positive().required(),
-        date: Joi.date().required(),
+        date: Joi.date().raw().required(),
     }
 
 }

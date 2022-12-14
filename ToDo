@@ -1,3 +1,4 @@
 [] Auth
 [] Tests
 [] Date objects to timestamp
+[] Catch errors in service layer

@@ -35,7 +35,8 @@ const debugLog = (message, meta = {}) => {
  */
 const getAll = async () => {
     debugLog('Fetching all accounts');
-    const items = await accountRepo.findAll();
+    let items = await accountRepo.findAll();
+    items = items.map(formatOutgoingAccount);
     const count = items.length;
     return {
       items,
