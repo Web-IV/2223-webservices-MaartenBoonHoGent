@@ -1,19 +1,21 @@
-const supertest = require('supertest');
-const { getKnex, tables } = require('../../src/data');
-const createServer = require('../../src/createServer');
+const { tables } = require('../../src/data');
+const { withServer } = require('../helpers');
 
 describe("withdraws", () => {
-    let server;
     let request;
     let knex;
 
+    withServer(({ knex: k, request: r }) => {
+        knex = k;
+        request = r;
+    });
     // Constants
     const DEPOSITS_URL = "/api/withdraws";
     const DATA = {
         accounts: [
-            {accountNr: 1, 'e-mail': 'tom.doe@gmail.com', 'date joined': '2022-01-01 20:00:00', 'invested sum': 0.0},
-            {accountNr: 2, 'e-mail': 'pip.doe@gmail.com', 'date joined': '2022-02-01 18:00:00', 'invested sum': 5000.0},
-            {accountNr: 3, 'e-mail': 'sophie.doe@gmail.com', 'date joined': '2022-03-01 10:00:00', 'invested sum': 10000.0}],
+            {'e-mail': 'tom.doe@gmail.com', 'date joined': '2022-01-01 20:00:00', 'invested sum': 0.0},
+            {'e-mail': 'pip.doe@gmail.com', 'date joined': '2022-02-01 18:00:00', 'invested sum': 5000.0},
+            {'e-mail': 'sophie.doe@gmail.com', 'date joined': '2022-03-01 10:00:00', 'invested sum': 10000.0}],
         withdraws: [
             {date: '2022-02-01 20:00:00', accountNr: 1, sum: 2000.00},
             {date : '2022-07-01 20:00:00', accountNr: 2, sum: 5000.00},
@@ -23,42 +25,21 @@ describe("withdraws", () => {
         ]
     };
 
-    /** 
-     * BeforeAll function
-     */
-    const beforeAllFunction = async () => {
-        server = await createServer(); // create the server
-        request = supertest(server.getApp().callback()); // Perform a supertest request
-        knex = getKnex(); // get the knex instance. The server has to be created first
-
-        // Delete all data from the database
-        await knex(tables.account).delete();
-        await knex(tables.withdraw).delete();
-        await knex(tables.account).insert(DATA.accounts);
-        await knex(tables.withdraw).insert(DATA.withdraws);
-    }
-
-    /**
-     * AfterAll function
-     */
-    const afterAllFunction = async () => {
-        // Delete all data from the database
-        await knex(tables.account).delete();
-        await knex(tables.withdraw).delete();
-        await server.stop(); // stop the server
-    };
-
     // Test cases
     /**
      * Test case: GET /api/withdraws
      */
     describe('GET ' + DEPOSITS_URL, () => {
         beforeAll(async () => {
-            await beforeAllFunction();
+            await knex(tables.account).delete();
+            await knex(tables.withdraw).delete();
+            await knex(tables.account).insert(DATA.accounts);
+            await knex(tables.withdraw).insert(DATA.withdraws);
         });
 
         afterAll(async () => {
-            await afterAllFunction();
+            await knex(tables.account).delete();
+            await knex(tables.withdraw).delete();
         });
 
         it("should return a status code of 200 and a list of withdraws", async () => {
@@ -76,11 +57,15 @@ describe("withdraws", () => {
      */
     describe('GET ' + DEPOSITS_URL + '/:accountNr/:date', () => {
         beforeAll(async () => {
-            await beforeAllFunction();
+            await knex(tables.account).delete();
+            await knex(tables.withdraw).delete();
+            await knex(tables.account).insert(DATA.accounts);
+            await knex(tables.withdraw).insert(DATA.withdraws);
         });
 
         afterAll(async () => {
-            await afterAllFunction();
+            await knex(tables.account).delete();
+            await knex(tables.withdraw).delete();
         });
 
         // Return positive status code
@@ -124,11 +109,15 @@ describe("withdraws", () => {
     */
     describe('POST ' + DEPOSITS_URL, () => {
         beforeAll(async () => {
-            await beforeAllFunction();
+            await knex(tables.account).delete();
+            await knex(tables.withdraw).delete();
+            await knex(tables.account).insert(DATA.accounts);
+            await knex(tables.withdraw).insert(DATA.withdraws);
         });
 
         afterAll(async () => {
-            await afterAllFunction();
+            await knex(tables.account).delete();
+            await knex(tables.withdraw).delete();
         });
 
         // Return positive status code
@@ -166,11 +155,15 @@ describe("withdraws", () => {
      * */
     describe('PUT ' + DEPOSITS_URL + '/:accountNr/:date', () => {
         beforeAll(async () => {
-            await beforeAllFunction();
+            await knex(tables.account).delete();
+            await knex(tables.withdraw).delete();
+            await knex(tables.account).insert(DATA.accounts);
+            await knex(tables.withdraw).insert(DATA.withdraws);
         });
 
         afterAll(async () => {
-            await afterAllFunction();
+            await knex(tables.account).delete();
+            await knex(tables.withdraw).delete();
         });
 
         // Return positive status code
@@ -209,11 +202,15 @@ describe("withdraws", () => {
      * */
     describe('DELETE ' + DEPOSITS_URL + '/:accountNr/:date', () => {
         beforeAll(async () => {
-            await beforeAllFunction();
+            await knex(tables.account).delete();
+            await knex(tables.withdraw).delete();
+            await knex(tables.account).insert(DATA.accounts);
+            await knex(tables.withdraw).insert(DATA.withdraws);
         });
 
         afterAll(async () => {
-            await afterAllFunction();
+            await knex(tables.account).delete();
+            await knex(tables.withdraw).delete();
         });
 
         // Return positive status code

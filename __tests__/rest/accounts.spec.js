@@ -1,8 +1,8 @@
-const { getKnex, tables } = require('../../src/data');
+const { tables } = require('../../src/data');
 const { withServer } = require('../helpers');
 
 describe('accounts', () => {
-    let server;
+    let request;
     let knex;
 
     withServer(({ knex: k, request: r }) => {
@@ -13,9 +13,9 @@ describe('accounts', () => {
     const ACCOUNTS_URL = '/api/accounts';
     const DATA = {
         accounts: [
-            {accountNr: 1, 'e-mail': 'tom.doe@gmail.com', 'date joined': '2022-01-01 00:00:00', 'invested sum': 0.0}, // Timestamp: 1640991600
-            {accountNr: 2, 'e-mail': 'pip.doe@gmail.com', 'date joined': '2022-02-01 00:00:00', 'invested sum': 5000.0}, // Timestamp: 1643670000
-            {accountNr: 3, 'e-mail': 'sophie.doe@gmail.com', 'date joined': '2022-03-01 00:00:00', 'invested sum': 10000.0} // Timestamp: 1646089200
+            {'e-mail': 'tom.doe@gmail.com', 'date joined': '2022-01-01 00:00:00', 'invested sum': 0.0}, // Timestamp: 1640991600
+            {'e-mail': 'pip.doe@gmail.com', 'date joined': '2022-02-01 00:00:00', 'invested sum': 5000.0}, // Timestamp: 1643670000
+            {'e-mail': 'sophie.doe@gmail.com', 'date joined': '2022-03-01 00:00:00', 'invested sum': 10000.0} // Timestamp: 1646089200
         ]
     }
     // Test cases
@@ -24,8 +24,7 @@ describe('accounts', () => {
      */
     describe(('GET ' + ACCOUNTS_URL), () => {
         beforeAll(async () => {
-            await knex(tables.account).delete();
-                     
+            await knex(tables.account).delete();     
             await knex(tables.account).insert(DATA.accounts);
         });
 

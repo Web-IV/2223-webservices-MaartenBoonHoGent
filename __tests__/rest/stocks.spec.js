@@ -1,13 +1,14 @@
-const supertest = require('supertest');
-const { getKnex, tables } = require('../../src/data');
-const createServer = require('../../src/createServer');
-const { response } = require('express');
+const { tables } = require('../../src/data');
+const { withServer } = require('../helpers');
 
 describe('stocks', () => {
-    let server;
     let request;
     let knex;
 
+    withServer(({ knex: k, request: r }) => {
+        knex = k;
+        request = r;
+    });
     // Constants
     const DATA = {
         stocks: [{stockId: 1, symbol: 'AAPL', name: 'Apple Inc.', 
@@ -21,35 +22,18 @@ describe('stocks', () => {
     }
     const STOCKS_URL = "/api/stocks"
 
-    const beforeAllFunction = async () => {
-        server = await createServer(); // create the server
-        request = supertest(server.getApp().callback()); // Perform a supertest request
-        knex = getKnex(); // get the knex instance. The server has to be created first
-
-        // Delete all data from the database
-        await knex(tables.stock).delete();
-        await knex(tables.stock).insert(DATA.stocks);
-    };
-
-    /**
-     * AfterAll function
-     */
-    const afterAllFunction = async () => {
-        // Delete all data from the database
-        await knex(tables.stock).delete();
-        await server.stop(); // stop the server
-    };
-
     /**
      * Test case: GET /api/stocks
      */
     describe("GET " + STOCKS_URL, () => {
         beforeAll(async () => {
-            await beforeAllFunction();
+        // Delete all data from the database
+            await knex(tables.stock).delete();
+            await knex(tables.stock).insert(DATA.stocks);      
         });
 
         afterAll(async () => {
-            await afterAllFunction();
+            await knex(tables.stock).delete();
         });
 
         it("should return a list of stocks and a status code of 200", async () => {
@@ -65,11 +49,13 @@ describe('stocks', () => {
     */
     describe("GET " + STOCKS_URL + "/:stockId", () => {
         beforeAll(async () => {
-            await beforeAllFunction();
+        // Delete all data from the database
+            await knex(tables.stock).delete();
+            await knex(tables.stock).insert(DATA.stocks);      
         });
 
         afterAll(async () => {
-            await afterAllFunction();
+            await knex(tables.stock).delete();
         });
         // Test case: GET /api/stocks/1
         it("should return a stock with a status code of 200", async () => {
@@ -91,11 +77,13 @@ describe('stocks', () => {
     */
     describe("GET " + STOCKS_URL + "/symbol/:symbol", () => {
         beforeAll(async () => {
-            await beforeAllFunction();
+            // Delete all data from the database
+            await knex(tables.stock).delete();
+            await knex(tables.stock).insert(DATA.stocks);      
         });
 
         afterAll(async () => {
-            await afterAllFunction();
+            await knex(tables.stock).delete();
         });
         // Test case: GET /api/stocks/symbol/AAPL
         it("should return a stock with a status code of 200", async () => {
@@ -117,11 +105,13 @@ describe('stocks', () => {
     */
     describe("POST " + STOCKS_URL, () => {
         beforeAll(async () => {
-            await beforeAllFunction();
+        // Delete all data from the database
+            await knex(tables.stock).delete();
+            await knex(tables.stock).insert(DATA.stocks);      
         });
 
         afterAll(async () => {
-            await afterAllFunction();
+            await knex(tables.stock).delete();
         });
 
         // Test case: POST /api/stocks
@@ -156,11 +146,13 @@ describe('stocks', () => {
     */
     describe("PUT " + STOCKS_URL + "/:stockId", () => {
         beforeAll(async () => {
-            await beforeAllFunction();
+        // Delete all data from the database
+            await knex(tables.stock).delete();
+            await knex(tables.stock).insert(DATA.stocks);      
         });
 
         afterAll(async () => {
-            await afterAllFunction();
+            await knex(tables.stock).delete();
         });
 
         // Test case: PUT /api/stocks/1
@@ -195,11 +187,13 @@ describe('stocks', () => {
     */
     describe("DELETE " + STOCKS_URL + "/:stockId", () => {
         beforeAll(async () => {
-            await beforeAllFunction();
+        // Delete all data from the database
+            await knex(tables.stock).delete();
+            await knex(tables.stock).insert(DATA.stocks);      
         });
 
         afterAll(async () => {
-            await afterAllFunction();
+            await knex(tables.stock).delete();
         });
 
         // Test case: DELETE /api/stocks/1

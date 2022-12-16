@@ -1,12 +1,14 @@
-const supertest = require('supertest');
-const { getKnex, tables } = require('../../src/data');
-const createServer = require('../../src/createServer');
+const { tables } = require('../../src/data');
+const { withServer } = require('../helpers');
 
 describe('trades', () => {
-    let server;
     let request;
     let knex;
 
+    withServer(({ knex: k, request: r }) => {
+        knex = k;
+        request = r;
+    });
     // Constants
     const TRADES_URL = '/api/trades';
     const DATA = {
@@ -30,28 +32,7 @@ describe('trades', () => {
         {stockId: 3, symbol: 'AMZN', name: 'Amazon.com, Inc.',
         industry: 'Technology', sector: 'Internet'}],
     }; 
-    const beforeAllFunction = async () => {
-        server = await createServer(); // create the server
-        request = supertest(server.getApp().callback()); // Perform a supertest request
-        knex = getKnex(); // get the knex instance. The server has to be created first
-
-        // Delete all data from the database
-        await knex(tables.trade).delete();
-        await knex(tables.stock).delete();
-        await knex(tables.trade).insert(DATA.trades);
-        await knex(tables.stock).insert(DATA.stocks);
-    }
-
-    /**
-     * AfterAll function
-     */
-    const afterAllFunction = async () => {
-        // Delete all data from the database
-        await knex(tables.trade).delete();
-        await knex(tables.stock).delete();
-        await server.stop(); // stop the server
-    }
-
+    
     // Test cases
     
     /**
@@ -59,11 +40,15 @@ describe('trades', () => {
      */
     describe("GET " + TRADES_URL, () => {
         beforeAll(async () => {
-            await beforeAllFunction();
+            await knex(tables.trade).delete();
+            await knex(tables.stock).delete();
+            await knex(tables.trade).insert(DATA.trades);
+            await knex(tables.stock).insert(DATA.stocks);
         });
 
         afterAll(async () => {
-            await afterAllFunction();
+            await knex(tables.trade).delete();
+            await knex(tables.stock).delete();
         });
 
         it("should return a list of trades and a status code of 200", async () => {
@@ -92,11 +77,15 @@ describe('trades', () => {
     */
     describe("GET " + TRADES_URL + "/:tradeId", () => {
         beforeAll(async () => {
-            await beforeAllFunction();
+            await knex(tables.trade).delete();
+            await knex(tables.stock).delete();
+            await knex(tables.trade).insert(DATA.trades);
+            await knex(tables.stock).insert(DATA.stocks);
         });
 
         afterAll(async () => {
-            await afterAllFunction();
+            await knex(tables.trade).delete();
+            await knex(tables.stock).delete();
         });
 
         it("should return a trade with the given tradeId and a status code of 200", async () => {
@@ -124,11 +113,15 @@ describe('trades', () => {
     */
     describe("POST " + TRADES_URL, () => {
         beforeAll(async () => {
-            await beforeAllFunction();
+            await knex(tables.trade).delete();
+            await knex(tables.stock).delete();
+            await knex(tables.trade).insert(DATA.trades);
+            await knex(tables.stock).insert(DATA.stocks);
         });
 
         afterAll(async () => {
-            await afterAllFunction();
+            await knex(tables.trade).delete();
+            await knex(tables.stock).delete();
         });
 
         it("should return a status code of 200", async () => {
@@ -230,11 +223,15 @@ describe('trades', () => {
 
     describe("PUT " + TRADES_URL + "/:tradeId", () => {
         beforeAll(async () => {
-            await beforeAllFunction();
+            await knex(tables.trade).delete();
+            await knex(tables.stock).delete();
+            await knex(tables.trade).insert(DATA.trades);
+            await knex(tables.stock).insert(DATA.stocks);
         });
 
         afterAll(async () => {
-            await afterAllFunction();
+            await knex(tables.trade).delete();
+            await knex(tables.stock).delete();
         });
 
         // Test case: PUT /api/trades/:tradeId with a valid tradeId
@@ -351,11 +348,15 @@ describe('trades', () => {
      */
     describe("DELETE" + TRADES_URL + "/:tradeId", () => {
         beforeAll(async () => {
-            await beforeAllFunction();
+            await knex(tables.trade).delete();
+            await knex(tables.stock).delete();
+            await knex(tables.trade).insert(DATA.trades);
+            await knex(tables.stock).insert(DATA.stocks);
         });
 
         afterAll(async () => {
-            await afterAllFunction();
+            await knex(tables.trade).delete();
+            await knex(tables.stock).delete();
         });
 
         it("should return a status code of 200 and true if the trade was deleted", async() => {
