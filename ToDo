@@ -1,4 +1,5 @@
 [] Auth
-[] Tests
-[] Date objects to timestamp
-[] Catch errors in service layer
+[X] Tests
+[X] Date objects to timestamp
+[] Request logging
+[X] Catch errors in service layer

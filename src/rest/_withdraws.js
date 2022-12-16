@@ -5,7 +5,7 @@ const service = require('../service/withdraw');
 const validate = require('./_validation.js');
 
 
-// Deposit exists of the following elements: accountNr, date, sum, accountNr and date are primary key
+// Withdraw exists of the following elements: accountNr, date, sum, accountNr and date are primary key
 // Methods: create, delete, update, find, find by accountNr, find all
 
 /**
@@ -13,10 +13,10 @@ const validate = require('./_validation.js');
  * @param {*} ctx 
  */
 
-const getAllDeposits = async (ctx) => {
+const getAllWithdraws = async (ctx) => {
     ctx.body = await service.getAll();
 }
-getAllDeposits.validationScheme = null;
+getAllWithdraws.validationScheme = null;
 
 /**
  * Gets a withdraw by its key
@@ -24,8 +24,6 @@ getAllDeposits.validationScheme = null;
  */
 const getByKey = async (ctx) => {
     ctx.body = await service.getById({accountNr: ctx.params.accountNr, date: ctx.params.date});
-    if (!ctx.body)
-        ctx.status = 404;
 }
 getByKey.validationScheme = {
     params: {
@@ -38,16 +36,12 @@ getByKey.validationScheme = {
  * Creates a withdraw
  * @param {*} ctx 
  */
-const createDeposit = async (ctx) => {
+const createWithdraw = async (ctx) => {
     ctx.body = await service.create(ctx.request.body);
 
-    if (ctx.body === null)
-        ctx.status = 404;
-    else
-        ctx.status = 201;
 }
 
-createDeposit.validationScheme = {
+createWithdraw.validationScheme = {
     body: {
         accountNr : Joi.number().integer().positive().required(),
         date : Joi.date().raw().required(),
@@ -59,12 +53,10 @@ createDeposit.validationScheme = {
  * Updates a withdraw
  * @param {*} ctx 
  */
-const updateDeposit = async (ctx) => {
+const updateWithdraw = async (ctx) => {
     ctx.body = await service.updateById({accountNr: ctx.params.accountNr, date: ctx.params.date}, {sum: ctx.request.body.sum});
-    if (!ctx.body)
-        ctx.status = 404;
 }
-updateDeposit.validationScheme = {
+updateWithdraw.validationScheme = {
     params: {
         accountNr: Joi.number().integer().positive().required(),
         date: Joi.date().raw().required(),
@@ -79,13 +71,11 @@ updateDeposit.validationScheme = {
  * 
  * @param {*} ctx 
  */
-const deleteDeposit = async (ctx) => {
+const deleteWithdraw = async (ctx) => {
     ctx.body = await service.deleteById({accountNr: ctx.params.accountNr, date: ctx.params.date});
-    if (!ctx.body)
-        ctx.status = 404;
 
 }
-deleteDeposit.validationScheme = {
+deleteWithdraw.validationScheme = {
     params: {
         accountNr: Joi.number().integer().positive().required(),
         date: Joi.date().raw().required(),
@@ -98,11 +88,11 @@ deleteDeposit.validationScheme = {
 module.exports = (app) => {
     const router = new Router({ prefix: '/withdraws' });
     
-    router.get('/', validate(getAllDeposits.validationScheme), getAllDeposits);
+    router.get('/', validate(getAllWithdraws.validationScheme), getAllWithdraws);
     router.get('/:accountNr/:date', validate(getByKey.validationScheme), getByKey);
-    router.post('/', validate(createDeposit.validationScheme), createDeposit);
-    router.put('/:accountNr/:date', validate(updateDeposit.validationScheme), updateDeposit);
-    router.delete('/:accountNr/:date', validate(deleteDeposit.validationScheme), deleteDeposit);
+    router.post('/', validate(createWithdraw.validationScheme), createWithdraw);
+    router.put('/:accountNr/:date', validate(updateWithdraw.validationScheme), updateWithdraw);
+    router.delete('/:accountNr/:date', validate(deleteWithdraw.validationScheme), deleteWithdraw);
 
     app.use(router.routes()).use(router.allowedMethods());
 }

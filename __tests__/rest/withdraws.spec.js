@@ -26,7 +26,7 @@ describe("withdraws", () => {
     /** 
      * BeforeAll function
      */
-    beforeAll(async () => {
+    const beforeAllFunction = async () => {
         server = await createServer(); // create the server
         request = supertest(server.getApp().callback()); // Perform a supertest request
         knex = getKnex(); // get the knex instance. The server has to be created first
@@ -37,17 +37,16 @@ describe("withdraws", () => {
         await knex(tables.account).insert(DATA.accounts);
         await knex(tables.withdraw).insert(DATA.withdraws);
     }
-    );
 
     /**
      * AfterAll function
      */
-    afterAll(async () => {
+    const afterAllFunction = async () => {
         // Delete all data from the database
         await knex(tables.account).delete();
         await knex(tables.withdraw).delete();
         await server.stop(); // stop the server
-    });
+    };
 
     // Test cases
     /**
@@ -55,11 +54,11 @@ describe("withdraws", () => {
      */
     describe('GET ' + DEPOSITS_URL, () => {
         beforeAll(async () => {
-            await beforeAll;
+            await beforeAllFunction();
         });
 
         afterAll(async () => {
-            await afterAll;
+            await afterAllFunction();
         });
 
         it("should return a status code of 200 and a list of withdraws", async () => {
@@ -77,11 +76,11 @@ describe("withdraws", () => {
      */
     describe('GET ' + DEPOSITS_URL + '/:accountNr/:date', () => {
         beforeAll(async () => {
-            await beforeAll;
+            await beforeAllFunction();
         });
 
         afterAll(async () => {
-            await afterAll;
+            await afterAllFunction();
         });
 
         // Return positive status code
@@ -100,8 +99,6 @@ describe("withdraws", () => {
             withdraw['date'] = Math.floor(new Date(withdraw['date']).getTime() / 1000);
             const response = await request.get(DEPOSITS_URL + `/${withdraw['accountNr']}/${withdraw['date'] + 1}`);
             expect(response.status).toBe(404);
-            // Body should be empty
-            expect(response.body).toStrictEqual({});
         });
         // Return false status code on wrong accountNr
         it("should return a status code of 404 and an error message", async () => {
@@ -110,8 +107,7 @@ describe("withdraws", () => {
             withdraw['date'] = Math.floor(new Date(withdraw['date']).getTime() / 1000);
             const response = await request.get(DEPOSITS_URL + `/${withdraw['accountNr'] + 1}/${withdraw['date']}`);
             expect(response.status).toBe(404);
-            // Body should be empty
-            expect(response.body).toStrictEqual({});
+
         });
         // Return false status code on invalid date
         it("should return a status code of 400", async () => {
@@ -120,7 +116,6 @@ describe("withdraws", () => {
             withdraw['date'] = Math.floor(new Date(withdraw['date']).getTime() / 1000);
             const response = await request.get(DEPOSITS_URL + `/${withdraw['accountNr']}/invalidDate`);
             expect(response.status).toBe(400);
-            // expect(response.body).toStrictEqual({error: "Invalid date"});
         });
     });
 
@@ -129,20 +124,21 @@ describe("withdraws", () => {
     */
     describe('POST ' + DEPOSITS_URL, () => {
         beforeAll(async () => {
-            await beforeAll;
+            await beforeAllFunction();
         });
 
         afterAll(async () => {
-            await afterAll;
+            await afterAllFunction();
         });
 
         // Return positive status code
-        it("should return a status code of 201 and a withdraw object", async () => {
+        it("should return a status code of 200 and a withdraw object", async () => {
             let withdraw = JSON.parse(JSON.stringify(DATA.withdraws[0]));  
             // Change the date to a timestamp in seconds
             withdraw['date'] = Math.floor(new Date(withdraw['date']).getTime() / 1000) + 5000;
+            console.log("withdraw: " + JSON.stringify(withdraw));
             const response = await request.post(DEPOSITS_URL).send(withdraw);
-            expect(response.status).toBe(201);
+            expect(response.status).toBe(200);
             expect(response.body).toStrictEqual(withdraw);
         });
 
@@ -154,8 +150,7 @@ describe("withdraws", () => {
             withdraw['accountNr'] = 8000000000;
             const response = await request.post(DEPOSITS_URL).send(withdraw);
             expect(response.status).toBe(404);
-            // Body should be empty
-            expect(response.body).toStrictEqual({});
+
         });
         // Return false status code on invalid date
         it("should return a status code of 400", async () => {
@@ -172,11 +167,11 @@ describe("withdraws", () => {
      * */
     describe('PUT ' + DEPOSITS_URL + '/:accountNr/:date', () => {
         beforeAll(async () => {
-            await beforeAll;
+            await beforeAllFunction();
         });
 
         afterAll(async () => {
-            await afterAll;
+            await afterAllFunction();
         });
 
         // Return positive status code
@@ -198,8 +193,7 @@ describe("withdraws", () => {
             withdraw['accountNr'] = 6000;
             const response = await request.put(DEPOSITS_URL + `/${withdraw['accountNr']}/${withdraw['date']}`).send({sum: withdraw.sum});
             expect(response.status).toBe(404);
-            // Body should be empty
-            expect(response.body).toStrictEqual({});
+
         });
         // Return false status code on invalid date
         it("should return a status code of 400", async () => {
@@ -216,11 +210,11 @@ describe("withdraws", () => {
      * */
     describe('DELETE ' + DEPOSITS_URL + '/:accountNr/:date', () => {
         beforeAll(async () => {
-            await beforeAll;
+            await beforeAllFunction();
         });
 
         afterAll(async () => {
-            await afterAll;
+            await afterAllFunction();
         });
 
         // Return positive status code
@@ -242,7 +236,6 @@ describe("withdraws", () => {
             withdraw['accountNr'] = 6000;
             const response = await request.delete(DEPOSITS_URL + `/${withdraw['accountNr']}/${withdraw['date']}`);
             expect(response.status).toBe(404);
-            expect(response.body).toBe(false);
         });
         // Return false status code on invalid date
         it("should return a status code of 400", async () => {

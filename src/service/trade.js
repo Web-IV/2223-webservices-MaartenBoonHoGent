@@ -1,7 +1,7 @@
 const stockRepo = require("../repository/stock");
 const tradeRepo = require("../repository/trade");
 const { getLogger } = require('../core/logging');
-
+const ServiceError = require('../core/serviceError');
 
 const debugLog = (message, meta = {}) => {
     if (!this.logger) this.logger = getLogger();
@@ -9,8 +9,8 @@ const debugLog = (message, meta = {}) => {
 };
 
 const formatOutgoingTrade = (trade) => {
-    if (!trade) return null;
-    if (trade === undefined) return null;
+    if (!trade) throw ServiceError.notFound('Trade does not exist');
+    if (trade === undefined) throw ServiceError.notFound('Trade does not exist');
     return {
         tradeId: trade.tradeId,
         stockId: trade.stockId,
@@ -77,12 +77,12 @@ const updateById = async (tradeId, {stockId, priceBought, priceSold, dateBought,
     debugLog('Updating trade by id' + { tradeId } + `with values ${stockId, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold}`);
     const trade = await tradeRepo.findById(tradeId);
     if (!trade) {
-        return null;
+        throw ServiceError.notFound('Trade does not exist');
     }
     // Check if the stock exists
     const stock = await stockRepo.findById(stockId);
     if (!stock) {
-        return null;
+        throw ServiceError.notFound('Stock does not exist');
     }
 
     await tradeRepo.update(tradeId, formatIncomingTrade({stockId, priceBought, priceSold, dateBought, dateSold, amount, commentBought, commentSold}));
@@ -98,14 +98,14 @@ const deleteById = async (tradeId) => {
     debugLog('Deleting trade by id', { tradeId });
     const trade = await tradeRepo.findById(tradeId);
     if (!trade) {
-        return false;
+        throw ServiceError.notFound('Trade does not exist');
     }
     else {
         try {
             await tradeRepo.deleteById(tradeId);
             return true;
         }catch(err) {
-            return false;
+            throw ServiceError.internalServerError('Could not delete trade');
         }
     }
 }
@@ -121,7 +121,7 @@ const create = async ({stockId, priceBought, priceSold, dateBought, dateSold, am
     // Check if the stock exists
     const stockFound = await stockRepo.findById(stockId);
     if (!stockFound) {
-        return null;
+        throw ServiceError.notFound('Stock does not exist');
     }
     else {
         try {
@@ -129,7 +129,7 @@ const create = async ({stockId, priceBought, priceSold, dateBought, dateSold, am
             return await getById(tradeId);
         }
         catch (err) {
-            return null;
+            throw ServiceError.internalServerError('Could not create trade');
         }
     }
 }

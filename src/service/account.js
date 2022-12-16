@@ -1,11 +1,12 @@
 const accountRepo = require("../repository/account");
 const { getLogger } = require('../core/logging');
+const ServiceError = require('../core/serviceError');
 
 // Account exists of the following elements: accountNr, e-mail, date joined, invested sum, password
 
 const formatOutgoingAccount = (account) => {
-    if (!account) return null;
-    if (account === undefined) return null;
+    if (!account) throw ServiceError.notFound('Account does not exist');
+    if (account === undefined) throw ServiceError.notFound('Account does not exist');
     return {
         accountNr: account.accountNr,
         ["e-mail"]: account["e-mail"],
@@ -118,7 +119,8 @@ const create = async ({eMail, dateJoined, investedSum}) => {
     // Check if the account already exists
     const existingAccount = await accountRepo.findByEmail(eMail);
     if (existingAccount) {
-        return null;
+        // Throw error
+        throw ServiceError.conflict('Account already exists');
     }
     else {
         try {
@@ -126,7 +128,10 @@ const create = async ({eMail, dateJoined, investedSum}) => {
             return getById(accountNr);
         }
         catch (err) {
-            return null;
+            // Log error
+            const logger = getLogger();
+            logger.error('Could not create account', err);
+            throw ServiceError.internal('Could not create account');
         }
     }
 }

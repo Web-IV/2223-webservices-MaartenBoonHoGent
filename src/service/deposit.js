@@ -1,6 +1,7 @@
 const depositRepo = require("../repository/deposit");
 const { getLogger } = require('../core/logging');
 const accountRepo = require("../repository/account");
+const ServiceError = require('../core/serviceError');
 
 const debugLog = (message, meta = {}) => {
     if (!this.logger) this.logger = getLogger();
@@ -8,8 +9,9 @@ const debugLog = (message, meta = {}) => {
 };
 
 const formatOutgoingDeposit = (deposit) => {
-    if (!deposit) return null;
-    if (deposit === undefined) return null;
+    // Throw ServiceError if the deposit does not exist
+    if (!deposit) throw ServiceError.notFound('Deposit does not exist');
+    if (deposit === undefined) throw ServiceError.notFound('Deposit does not exist');
     return {
         accountNr: deposit.accountNr,
         date: Math.floor(new Date(deposit.date).getTime() / 1000),
@@ -56,7 +58,8 @@ const getById = async ({accountNr, date}) => {
     catch (err) {
         const logger = getLogger();
         logger.error(`Error fetching deposit with key ${date} and ${accountNr}`, err);
-        throw err;
+        // Throw ServiceError
+        throw ServiceError.notFound(`Deposit with key ${date} and ${accountNr} does not exist`);
     }
 }
 
@@ -68,18 +71,19 @@ const getById = async ({accountNr, date}) => {
  * @throws Error if the deposit could not be updated
  */
 const updateById = async ({accountNr, date}, {sum}) => {
+    const originalDate = date;
     try {
-        const originalDate = date;
         debugLog(`Updating deposit with key ${date} and ${accountNr}, new values: ${JSON.stringify({sum})}`);
         date = formatIncomingDate(date);
         await depositRepo.update({date, accountNr}, {sum});
-        return getById({date: originalDate, accountNr});
     }
     catch (err) {
         const logger = getLogger();
         logger.error(`Error updating deposit with key ${date} and ${accountNr}`, err);
-        throw err;
+        // Throw ServiceError
+        throw ServiceError.internalServerError(`Error updating deposit with key ${date} and ${accountNr}`);
     }
+    return getById({date: originalDate, accountNr});
 
 }
 
@@ -93,7 +97,8 @@ const deleteById = async ({accountNr, date}) => {
     debugLog(`Deleting deposit with key ${date} and ${accountNr}`);
     date = formatIncomingDate(date);
     const deposit = await depositRepo.findById({date, accountNr});
-    if (!deposit) { return false; }
+    console.log(deposit);
+    if (!deposit) { throw ServiceError.notFound(`Deposit with key ${date} and ${accountNr} does not exist`) }
     else {
         try {
             await depositRepo.deleteById({date, accountNr});
@@ -102,7 +107,7 @@ const deleteById = async ({accountNr, date}) => {
         catch (err) {
             const logger = getLogger();
             logger.error(`Error deleting deposit with key ${date} and ${accountNr}`, err);
-            throw err;
+            throw ServiceError.internalServerError(`Error deleting deposit with key ${date} and ${accountNr}`);
         }
     }
 }
@@ -119,12 +124,12 @@ const create = async ({ accountNr, date, sum}) => {
     const originalDate = date;
     date = formatIncomingDate(date);
     const deposit = await depositRepo.findById({date, accountNr});
-    if (deposit) {return null;}
+    if (deposit) {throw ServiceError.conflict(`Deposit with key ${date} and ${accountNr} already exists`)}
     else {
         // Check if the account exists
         const account = await accountRepo.findById(accountNr);
         if (!account) {
-            return null;
+            throw ServiceError.notFound(`Account with key ${accountNr} does not exist`);
         }
         else {
             try {
@@ -134,7 +139,7 @@ const create = async ({ accountNr, date, sum}) => {
             catch (err) {
                 const logger = getLogger();
                 logger.error(`Error creating deposit with values ${JSON.stringify({ accountNr, date, sum})}`, err);
-                return null;
+                throw ServiceError.internalServerError(`Error creating deposit with values ${JSON.stringify({ accountNr, date, sum})}`);
             }
         }       
     } 

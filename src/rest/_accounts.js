@@ -35,8 +35,6 @@ const createAccount = async (ctx) => {
     let response = await service.create(formatInput(ctx));
     ctx.body = response;
     ctx.status = 201;
-    if (response == null) 
-        ctx.status = 409;
     
 }
 createAccount.validationScheme = {
@@ -53,8 +51,6 @@ createAccount.validationScheme = {
  */
 const updateAccount = async (ctx) => {
     ctx.body = await service.updateById(ctx.params.accountNr, formatInput(ctx));
-    if (ctx.body == null)
-        ctx.status = 404;
 }
 updateAccount.validationScheme = {
     params: {
@@ -73,8 +69,6 @@ updateAccount.validationScheme = {
  */
 const deleteAccount = async (ctx) => {
     ctx.body = await service.deleteById(ctx.params.accountNr);
-    if (ctx.body == false)
-        ctx.status = 404;
 }
 deleteAccount.validationScheme = {
     params: {
@@ -89,8 +83,6 @@ deleteAccount.validationScheme = {
 const getAccountById = async (ctx) => {
     let response = await service.getById(ctx.params.accountNr);
     ctx.body = response;
-    if (response == null) 
-        ctx.status = 404;
 }
 getAccountById.validationScheme = {
     params: {
@@ -104,8 +96,6 @@ getAccountById.validationScheme = {
  */
 const getAccountByEmail = async (ctx) => {
     ctx.body = await service.getByEmail(ctx.params.email);
-    if (ctx.body == null)
-        ctx.status = 404;
 }
 getAccountByEmail.validationScheme = {
     params: {

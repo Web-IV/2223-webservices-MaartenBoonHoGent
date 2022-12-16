@@ -1,12 +1,14 @@
-const supertest = require('supertest');
 const { getKnex, tables } = require('../../src/data');
-const createServer = require('../../src/createServer');
+const { withServer } = require('../helpers');
 
 describe('accounts', () => {
     let server;
-    let request;
     let knex;
 
+    withServer(({ knex: k, request: r }) => {
+        knex = k;
+        request = r;
+    });
     // Constants
     const ACCOUNTS_URL = '/api/accounts';
     const DATA = {
@@ -16,48 +18,26 @@ describe('accounts', () => {
             {accountNr: 3, 'e-mail': 'sophie.doe@gmail.com', 'date joined': '2022-03-01 00:00:00', 'invested sum': 10000.0} // Timestamp: 1646089200
         ]
     }
-    
-    /** 
-     * BeforeAll function
-     */
-    beforeAll(async () => {
-        server = await createServer(); // create the server
-        request = supertest(server.getApp().callback()); // Perform a supertest request
-        knex = getKnex(); // get the knex instance. The server has to be created first
-
-        // Delete all data from the database
-        await knex(tables.account).delete();
-        await knex(tables.account).insert(DATA.accounts);
-    }
-    );
-
-    /**
-     * AfterAll function
-     */
-    afterAll(async () => {
-        // Delete all data from the database
-        await knex(tables.account).delete();
-        await server.stop(); // stop the server
-    });
-
     // Test cases
     /**
      * Test case: GET /api/accounts
      */
     describe(('GET ' + ACCOUNTS_URL), () => {
         beforeAll(async () => {
-            await beforeAll;
+            await knex(tables.account).delete();
+            // Reset the auto-increment value
+            await knex.raw(`ALTER TABLE ${tables.account} AUTO_INCREMENT = 0`);            
+            await knex(tables.account).insert(DATA.accounts);
         });
 
         afterAll(async () => {
-            await afterAll;
+            await knex(tables.account).delete();
         });
 
         it("should return a list of accounts and a status code of 200", async () => {
             const response = await request.get(ACCOUNTS_URL);
             expect(response.status).toBe(200);
             expect(response.body['count']).toEqual(DATA.accounts.length);
-            // expect(response.body['items']).toEqual(DATA.accounts); --> doesn't work due to data notation
             accountNrs = response.body['items'].map(account => account.accountNr);
             expect(accountNrs).toEqual(DATA.accounts.map(account => account.accountNr));
             emails = response.body['items'].map(account => account['e-mail']);
@@ -73,11 +53,14 @@ describe('accounts', () => {
      */
     describe(('GET ' + ACCOUNTS_URL + '/:accountNr'), () => {
         beforeAll(async () => {
-            await beforeAll;
+            await knex(tables.account).delete();
+            // Reset the auto-increment value
+            await knex.raw(`ALTER TABLE ${tables.account} AUTO_INCREMENT = 0`);            
+            await knex(tables.account).insert(DATA.accounts);
         });
 
         afterAll(async () => {
-            await afterAll;
+            await knex(tables.account).delete();
         });
 
         it("should return a single account and a status code of 200", async () => {
@@ -91,8 +74,7 @@ describe('accounts', () => {
         it("should return a status code of 404 if the account does not exist", async () => {
             const response = await request.get(ACCOUNTS_URL + '/4');
             expect(response.status).toBe(404);
-            // Expect the response body to be empty
-            expect(response.body).toEqual({});
+
         });
     });
 
@@ -102,11 +84,14 @@ describe('accounts', () => {
      */
     describe(('GET ' + ACCOUNTS_URL + '/e-mail/:e-mail'), () => {
         beforeAll(async () => {
-            await beforeAll;
+            await knex(tables.account).delete();
+            // Reset the auto-increment value
+            await knex.raw(`ALTER TABLE ${tables.account} AUTO_INCREMENT = 0`);            
+            await knex(tables.account).insert(DATA.accounts);
         });
 
         afterAll(async () => {
-            await afterAll;
+            await knex(tables.account).delete();
         });
 
         it("should return a single account and a status code of 200", async () => {
@@ -120,8 +105,7 @@ describe('accounts', () => {
         it("should return a status code of 404 if the email doesn't exists", async () => {
             const response = await request.get(ACCOUNTS_URL + '/email/nonexistent@false.com');
             expect(response.status).toBe(404);
-            // Expect the response body to be empty
-            expect(response.body).toEqual({});
+
         });
     });
     /**
@@ -129,20 +113,23 @@ describe('accounts', () => {
     */
     describe(('POST ' + ACCOUNTS_URL), () => {
         beforeAll(async () => {
-            await beforeAll;
+            await knex(tables.account).delete();
+            // Reset the auto-increment value
+            await knex.raw(`ALTER TABLE ${tables.account} AUTO_INCREMENT = 0`);            
+            await knex(tables.account).insert(DATA.accounts);
         });
 
         afterAll(async () => {
-            await afterAll;
+            await knex(tables.account).delete();
         });
 
-        it("should create a new account and return a status code of 201", async () => {
+        it("should create a new account and return a status code of 200", async () => {
             const response = await request.post(ACCOUNTS_URL).send({
                 "e-mail": 'tommy.doe@gmail.com',
                 "date joined": 1651701600,
                 "invested sum": 1000.0
             });
-            expect(response.status).toBe(201);
+            expect(response.status).toBe(200);
             //expect(response.body['accountNr']).toEqual(4);
             expect(response.body['e-mail']).toEqual('tommy.doe@gmail.com');
             expect(response.body['invested sum']).toEqual(1000.0);
@@ -156,10 +143,8 @@ describe('accounts', () => {
                 "date joined": 1651701600,
                 "invested sum": 1000.0
             });
-            
             expect(response.status).toBe(409);
-            // Expect the response body to be empty
-            expect(response.body).toEqual({});
+
         });
     });
 
@@ -169,11 +154,14 @@ describe('accounts', () => {
     */
     describe(('PUT ' + ACCOUNTS_URL + '/:accountNr'), () => {
         beforeAll(async () => {
-            await beforeAll;
+            await knex(tables.account).delete();
+            // Reset the auto-increment value
+            await knex.raw(`ALTER TABLE ${tables.account} AUTO_INCREMENT = 0`);            
+            await knex(tables.account).insert(DATA.accounts);
         });
 
         afterAll(async () => {
-            await afterAll;
+            await knex(tables.account).delete();
         });
 
         it("should update an existing account and return a status code of 200", async () => {
@@ -197,11 +185,10 @@ describe('accounts', () => {
             };
             const response = await request.put(ACCOUNTS_URL + '/9999').send(dummyData);
             expect(response.status).toBe(404);
-            // Expect the response body to be empty
-            expect(response.body).toEqual({});
+
         });
         // Attempt to update an account with an existing e-mail
-        it("should return a status code of 409 if the e-mail already exists", async () => {
+        it("should return a status code of 404 if the e-mail already exists", async () => {
             const dummyData = {
                 "e-mail": 'tom.doe@gmail.com',
                 "date joined": 1651701600,
@@ -209,8 +196,7 @@ describe('accounts', () => {
             };
             const response = await request.put(ACCOUNTS_URL + '/9999').send(dummyData);
             expect(response.status).toBe(404);
-            // Expect the response body to be empty
-            expect(response.body).toEqual({});
+
         });
     });
 
@@ -221,11 +207,16 @@ describe('accounts', () => {
 
     describe(('DELETE ' + ACCOUNTS_URL + '/:accountNr'), () => {
         beforeAll(async () => {
-            await beforeAll;
+            await knex(tables.account).delete();
+            // Reset the auto-increment value
+            await knex.raw(`ALTER TABLE ${tables.account} AUTO_INCREMENT = 0`);
+            // Console log the table
+            console.log(await knex(tables.account).select());
+            await knex(tables.account).insert(DATA.accounts);
         });
 
         afterAll(async () => {
-            await afterAll;
+            await knex(tables.account).delete();
         });
 
         it("should delete an existing account and return a status code of 200", async () => {
@@ -238,8 +229,6 @@ describe('accounts', () => {
         it("should return a status code of 404 if the account does not exist", async () => {
             const response = await request.delete(ACCOUNTS_URL + '/9999');
             expect(response.status).toBe(404);
-            // Expect the response body to be empty
-            expect(response.body).toEqual(false);
         });
     });
 });

@@ -15,7 +15,7 @@ describe('trades', () => {
             "date bought": '2022-08-01 00:00:00', "date sold": '2022-08-02 00:00:00', amount: 10, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'},
 
         {tradeId: 2, stockId: 2,
-            "price bought": 200.00, "price sold": 201.00,
+            "price bought": 200.00, "price sold": 200.00,
             "date bought": '2022-08-02 00:00:00', "date sold": '2022-08-03 00:00:00', amount: 10, "comment bought": 'bought 10 shares', "comment sold": 'sold 10 shares'},
         
         {tradeId: 3, stockId: 1,
@@ -30,7 +30,7 @@ describe('trades', () => {
         {stockId: 3, symbol: 'AMZN', name: 'Amazon.com, Inc.',
         industry: 'Technology', sector: 'Internet'}],
     }; 
-    beforeAll(async () => {
+    const beforeAllFunction = async () => {
         server = await createServer(); // create the server
         request = supertest(server.getApp().callback()); // Perform a supertest request
         knex = getKnex(); // get the knex instance. The server has to be created first
@@ -41,17 +41,16 @@ describe('trades', () => {
         await knex(tables.trade).insert(DATA.trades);
         await knex(tables.stock).insert(DATA.stocks);
     }
-    );
 
     /**
      * AfterAll function
      */
-    afterAll(async () => {
+    const afterAllFunction = async () => {
         // Delete all data from the database
         await knex(tables.trade).delete();
         await knex(tables.stock).delete();
         await server.stop(); // stop the server
-    });
+    }
 
     // Test cases
     
@@ -60,11 +59,11 @@ describe('trades', () => {
      */
     describe("GET " + TRADES_URL, () => {
         beforeAll(async () => {
-            await beforeAll;
+            await beforeAllFunction();
         });
 
         afterAll(async () => {
-            await afterAll;
+            await afterAllFunction();
         });
 
         it("should return a list of trades and a status code of 200", async () => {
@@ -93,11 +92,11 @@ describe('trades', () => {
     */
     describe("GET " + TRADES_URL + "/:tradeId", () => {
         beforeAll(async () => {
-            await beforeAll;
+            await beforeAllFunction();
         });
 
         afterAll(async () => {
-            await afterAll;
+            await afterAllFunction();
         });
 
         it("should return a trade with the given tradeId and a status code of 200", async () => {
@@ -117,8 +116,6 @@ describe('trades', () => {
             const tradeId = 100;
             const response = await request.get(TRADES_URL + "/" + tradeId);
             expect(response.status).toBe(404);
-            // Body should be empty
-            expect(response.body).toEqual({});
         });
     });
 
@@ -127,21 +124,21 @@ describe('trades', () => {
     */
     describe("POST " + TRADES_URL, () => {
         beforeAll(async () => {
-            await beforeAll;
+            await beforeAllFunction();
         });
 
         afterAll(async () => {
-            await afterAll;
+            await afterAllFunction();
         });
 
-        it("should return a status code of 201", async () => {
+        it("should return a status code of 200", async () => {
             const trade = {
                 stockId: 2,
                 "price bought": 100.00, "price sold": 101.00,
                 "date bought": 1659304800, "date sold": 1659391200, amount: 50, "comment bought": 'bought 50 shares', "comment sold": 'sold 50 shares'
             };
             const response = await request.post(TRADES_URL).send(trade);
-            expect(response.status).toBe(201);
+            expect(response.status).toBe(200);
             // expect(response.body.tradeId).toBe(4);
             expect(response.body.stockId).toBe(trade.stockId);
             expect(response.body["price bought"]).toBe(trade["price bought"]);
@@ -159,8 +156,6 @@ describe('trades', () => {
             };
             const response = await request.post(TRADES_URL).send(trade);
             expect(response.status).toBe(404);
-            // Body should be empty
-            expect(response.body).toEqual({});
         });
         // Test case: POST /api/trades with an invalid price bought
         it("should return a status code of 400 when receiving an invalid price sold", async () => {
@@ -171,8 +166,6 @@ describe('trades', () => {
             };
             const response = await request.post(TRADES_URL).send(trade);
             expect(response.status).toBe(400);
-            // Body should be empty
-            expect(response.body).toEqual({});
         });
         // Test case: POST /api/trades with an invalid price sold
         it("should return a status code of 400 when receiving an invalid price sold", async () => {
@@ -183,8 +176,7 @@ describe('trades', () => {
             };
             const response = await request.post(TRADES_URL).send(trade);
             expect(response.status).toBe(400);
-            // Body should be empty
-            expect(response.body).toEqual({});
+
         });
         // Test case: POST /api/trades with an invalid amount
         it("should return a status code of 400 when receiving an invalid amount", async () => {
@@ -195,18 +187,16 @@ describe('trades', () => {
             };
             const response = await request.post(TRADES_URL).send(trade);
             expect(response.status).toBe(400);
-            // Body should be empty
-            expect(response.body).toEqual({});
         });
         // Test case: POST /api/trades with an empty comment bought
-        it("should return a status code of 201 when receiving an empty comment bought", async () => {
+        it("should return a status code of 200 when receiving an empty comment bought", async () => {
             const trade = {
                 stockId: 2,
                 "price bought": 100.00, "price sold": 101.00,
                 "date bought": 1640991600, "date sold": 1641078000, amount: 10, "comment bought": '', "comment sold": 'sold 10 shares'
             };
             const response = await request.post(TRADES_URL).send(trade);
-            expect(response.status).toBe(201);
+            expect(response.status).toBe(200);
             // expect(response.body.tradeId).toBe(4);
             expect(response.body.stockId).toBe(trade.stockId);
             expect(response.body["price bought"]).toBe(trade["price bought"]);
@@ -216,14 +206,14 @@ describe('trades', () => {
             expect(response.body["comment sold"]).toBe(trade["comment sold"]);
         });
         // Test case: POST /api/trades with an empty comment sold
-        it("should return a status code of 201 when receiving an empty comment sold", async () => {
+        it("should return a status code of 200 when receiving an empty comment sold", async () => {
             const trade = {
                 stockId: 2,
                 "price bought": 100.00, "price sold": 101.00,
                 "date bought": 1640991600, "date sold": 1641078000, amount: 10, "comment bought": 'bought 10 shares', "comment sold": ''
             };
             const response = await request.post(TRADES_URL).send(trade);
-            expect(response.status).toBe(201);
+            expect(response.status).toBe(200);
             // expect(response.body.tradeId).toBe(4);
             expect(response.body.stockId).toBe(trade.stockId);
             expect(response.body["price bought"]).toBe(trade["price bought"]);
@@ -240,11 +230,11 @@ describe('trades', () => {
 
     describe("PUT " + TRADES_URL + "/:tradeId", () => {
         beforeAll(async () => {
-            await beforeAll;
+            await beforeAllFunction();
         });
 
         afterAll(async () => {
-            await afterAll;
+            await afterAllFunction();
         });
 
         // Test case: PUT /api/trades/:tradeId with a valid tradeId
@@ -273,8 +263,6 @@ describe('trades', () => {
             };
             const response = await request.put(TRADES_URL + "/100").send(trade);
             expect(response.status).toBe(404);
-            // Body should be empty
-            expect(response.body).toEqual({});
         });
         // Test case: PUT /api/trades/:tradeId with an invalid stockId
         it("should return a status code of 404 when receiving an invalid stockId", async () => {
@@ -285,8 +273,7 @@ describe('trades', () => {
             };
             const response = await request.put(TRADES_URL + "/1").send(trade);
             expect(response.status).toBe(404);
-            // Body should be empty
-            expect(response.body).toEqual({});
+
         });
         // Test case: PUT /api/trades/:tradeId with an invalid price bought
         it("should return a status code of 400 when receiving an invalid price bought", async () => {
@@ -297,8 +284,6 @@ describe('trades', () => {
             };
             const response = await request.put(TRADES_URL + "/1").send(trade);
             expect(response.status).toBe(400);
-            // Body should be empty
-            expect(response.body).toEqual({});
         });
 
         // Test case: PUT /api/trades/:tradeId with an invalid price sold
@@ -310,8 +295,6 @@ describe('trades', () => {
             };
             const response = await request.put(TRADES_URL + "/1").send(trade);
             expect(response.status).toBe(400);
-            // Body should be empty
-            expect(response.body).toEqual({});
         });
 
         // Test case: PUT /api/trades/:tradeId with an invalid amount
@@ -323,8 +306,6 @@ describe('trades', () => {
             };
             const response = await request.put(TRADES_URL + "/1").send(trade);
             expect(response.status).toBe(400);
-            // Body should be empty
-            expect(response.body).toEqual({});
         });
 
         // Test case: PUT /api/trades/:tradeId with an empty comment bought
@@ -370,11 +351,11 @@ describe('trades', () => {
      */
     describe("DELETE" + TRADES_URL + "/:tradeId", () => {
         beforeAll(async () => {
-            await beforeAll;
+            await beforeAllFunction();
         });
 
         afterAll(async () => {
-            await afterAll;
+            await afterAllFunction();
         });
 
         it("should return a status code of 200 and true if the trade was deleted", async() => {
@@ -386,7 +367,6 @@ describe('trades', () => {
         it("should return a status code of 404 and false if the trade couldn't be deleted", async() => {
             const response = await request.delete(TRADES_URL + "/999999999");
             expect(response.status).toBe(404);
-            expect(response.body).toBe(false);
         });
     }
     );

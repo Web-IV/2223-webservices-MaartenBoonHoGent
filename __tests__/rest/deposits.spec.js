@@ -26,7 +26,7 @@ describe("deposits", () => {
     /** 
      * BeforeAll function
      */
-    beforeAll(async () => {
+    const beforeAllFunction = async () => {
         server = await createServer(); // create the server
         request = supertest(server.getApp().callback()); // Perform a supertest request
         knex = getKnex(); // get the knex instance. The server has to be created first
@@ -37,17 +37,16 @@ describe("deposits", () => {
         await knex(tables.account).insert(DATA.accounts);
         await knex(tables.deposit).insert(DATA.deposits);
     }
-    );
 
     /**
      * AfterAll function
      */
-    afterAll(async () => {
+    const afterAllFunction = async () => {
         // Delete all data from the database
         await knex(tables.account).delete();
         await knex(tables.deposit).delete();
         await server.stop(); // stop the server
-    });
+    };
 
     // Test cases
     /**
@@ -55,11 +54,11 @@ describe("deposits", () => {
      */
     describe('GET ' + DEPOSITS_URL, () => {
         beforeAll(async () => {
-            await beforeAll;
+            await beforeAllFunction();
         });
 
         afterAll(async () => {
-            await afterAll;
+            await afterAllFunction();
         });
 
         it("should return a status code of 200 and a list of deposits", async () => {
@@ -77,11 +76,11 @@ describe("deposits", () => {
      */
     describe('GET ' + DEPOSITS_URL + '/:accountNr/:date', () => {
         beforeAll(async () => {
-            await beforeAll;
+            await beforeAllFunction();
         });
 
         afterAll(async () => {
-            await afterAll;
+            await afterAllFunction();
         });
 
         // Return positive status code
@@ -100,8 +99,6 @@ describe("deposits", () => {
             deposit['date'] = Math.floor(new Date(deposit['date']).getTime() / 1000);
             const response = await request.get(DEPOSITS_URL + `/${deposit['accountNr']}/${deposit['date'] + 1}`);
             expect(response.status).toBe(404);
-            // Body should be empty
-            expect(response.body).toStrictEqual({});
         });
         // Return false status code on wrong accountNr
         it("should return a status code of 404 and an error message", async () => {
@@ -110,8 +107,7 @@ describe("deposits", () => {
             deposit['date'] = Math.floor(new Date(deposit['date']).getTime() / 1000);
             const response = await request.get(DEPOSITS_URL + `/${deposit['accountNr'] + 1}/${deposit['date']}`);
             expect(response.status).toBe(404);
-            // Body should be empty
-            expect(response.body).toStrictEqual({});
+
         });
         // Return false status code on invalid date
         it("should return a status code of 400", async () => {
@@ -120,7 +116,6 @@ describe("deposits", () => {
             deposit['date'] = Math.floor(new Date(deposit['date']).getTime() / 1000);
             const response = await request.get(DEPOSITS_URL + `/${deposit['accountNr']}/invalidDate`);
             expect(response.status).toBe(400);
-            // expect(response.body).toStrictEqual({error: "Invalid date"});
         });
     });
 
@@ -129,20 +124,20 @@ describe("deposits", () => {
     */
     describe('POST ' + DEPOSITS_URL, () => {
         beforeAll(async () => {
-            await beforeAll;
+            await beforeAllFunction();
         });
 
         afterAll(async () => {
-            await afterAll;
+            await afterAllFunction();
         });
 
         // Return positive status code
-        it("should return a status code of 201 and a deposit object", async () => {
+        it("should return a status code of 200 and a deposit object", async () => {
             let deposit = JSON.parse(JSON.stringify(DATA.deposits[0]));  
             // Change the date to a timestamp in seconds
             deposit['date'] = Math.floor(new Date(deposit['date']).getTime() / 1000) + 5000;
             const response = await request.post(DEPOSITS_URL).send(deposit);
-            expect(response.status).toBe(201);
+            expect(response.status).toBe(200);
             expect(response.body).toStrictEqual(deposit);
         });
 
@@ -154,8 +149,7 @@ describe("deposits", () => {
             deposit['accountNr'] = 8000000000;
             const response = await request.post(DEPOSITS_URL).send(deposit);
             expect(response.status).toBe(404);
-            // Body should be empty
-            expect(response.body).toStrictEqual({});
+
         });
         // Return false status code on invalid date
         it("should return a status code of 400", async () => {
@@ -172,11 +166,11 @@ describe("deposits", () => {
      * */
     describe('PUT ' + DEPOSITS_URL + '/:accountNr/:date', () => {
         beforeAll(async () => {
-            await beforeAll;
+            await beforeAllFunction();
         });
 
         afterAll(async () => {
-            await afterAll;
+            await afterAllFunction();
         });
 
         // Return positive status code
@@ -198,8 +192,7 @@ describe("deposits", () => {
             deposit['accountNr'] = 6000;
             const response = await request.put(DEPOSITS_URL + `/${deposit['accountNr']}/${deposit['date']}`).send({sum: deposit.sum});
             expect(response.status).toBe(404);
-            // Body should be empty
-            expect(response.body).toStrictEqual({});
+
         });
         // Return false status code on invalid date
         it("should return a status code of 400", async () => {
@@ -216,11 +209,11 @@ describe("deposits", () => {
      * */
     describe('DELETE ' + DEPOSITS_URL + '/:accountNr/:date', () => {
         beforeAll(async () => {
-            await beforeAll;
+            await beforeAllFunction();
         });
 
         afterAll(async () => {
-            await afterAll;
+            await afterAllFunction();
         });
 
         // Return positive status code
@@ -242,7 +235,6 @@ describe("deposits", () => {
             deposit['accountNr'] = 6000;
             const response = await request.delete(DEPOSITS_URL + `/${deposit['accountNr']}/${deposit['date']}`);
             expect(response.status).toBe(404);
-            expect(response.body).toBe(false);
         });
         // Return false status code on invalid date
         it("should return a status code of 400", async () => {

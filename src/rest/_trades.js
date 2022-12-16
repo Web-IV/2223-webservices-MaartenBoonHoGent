@@ -23,8 +23,6 @@ getAllTrades.validationScheme = null;
  */
 const getByTradeNr = async (ctx) => {
     ctx.body = await service.getById(ctx.params.tradeNr);
-    if (ctx.body === null) 
-        ctx.status = 404;
     
 }
 getByTradeNr.validationScheme = {
@@ -48,9 +46,6 @@ const createTrade = async (ctx) => {
         commentBought: ctx.request.body["comment bought"],
         commentSold: ctx.request.body["comment sold"],
         });
-    ctx.status = 201;
-    if (ctx.body === null) 
-        ctx.status = 404;
 }
 createTrade.validationScheme = {
     body: {
@@ -81,8 +76,6 @@ const updateTrade = async (ctx) => {
             commentBought: ctx.request.body["comment bought"],
             commentSold: ctx.request.body["comment sold"],
             });
-    if (ctx.body === null)
-        ctx.status = 404;
 }
 updateTrade.validationScheme = {
     params: {
@@ -106,8 +99,7 @@ updateTrade.validationScheme = {
  */
 const deleteTrade = async (ctx) => {
     ctx.body = await service.deleteById(ctx.params.tradeNr);
-    if (!ctx.body)
-        ctx.status = 404;
+
 }
 deleteTrade.validationScheme = {
     params: {

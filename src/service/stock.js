@@ -1,5 +1,6 @@
 const stockRepo = require("../repository/stock");
 const { getLogger } = require('../core/logging');
+const ServiceError = require('../core/serviceError');
 
 const debugLog = (message, meta = {}) => {
     if (!this.logger) this.logger = getLogger();
@@ -24,13 +25,13 @@ const getAll = async () => {
  * Returns the stock with the given id
  * @param {*} stockId 
  * @returns Stock if it exists
- * @returns null if the stock does not exist
- */
+ * @throws ServiceError.notFound if the stock does not exist
+ *  */
 const getById = async (stockId) => {
     debugLog(`Fetching stock with id ${stockId}`);
     const stock = await stockRepo.findById(stockId);
 
-    if (!stock) { return null; }
+    if (!stock) { throw ServiceError.notFound('Stock does not exist'); }
     return stock;
 }
 
@@ -38,13 +39,13 @@ const getById = async (stockId) => {
  * Returns the stock with the given e-mail
  * @param {*} email
  * @returns Stock if it exists
- * @returns null if the stock does not exist
+ * @throws ServiceError.notFound if the stock does not exist
  */
 const getBySymbol = async (symbol) => {
     debugLog(`Fetching stock with symbol ${symbol}`);
     const stock = await stockRepo.findBySymbol(symbol);
 
-    if (!stock) { return null; }
+    if (!stock) { throw ServiceError.notFound('Stock does not exist');}
     return stock;
 }
 
@@ -69,7 +70,7 @@ const updateById = async (stockId, { symbol, name, industry, sector }) => {
 const deleteById = async (stockId) => {
     debugLog(`Deleting stock with id ${stockId}`);
     const stock = await stockRepo.findById(stockId);
-    if (!stock) { return false; }
+    if (!stock) { throw ServiceError.notFound('Stock does not exist'); }
     else {
         try
         {
@@ -77,7 +78,7 @@ const deleteById = async (stockId) => {
             return true;
         }
         catch (err) {
-            return false;
+            throw ServiceError.internalServerError('Could not delete stock');
         }
     }
 }
@@ -89,22 +90,24 @@ const deleteById = async (stockId) => {
  * @returns null if the stock already exists
  */
 const create = async ({ symbol, name, industry, sector}) => {
+    let id = null;
     debugLog(`Creating stock with values ${JSON.stringify({ symbol, name, industry, sector})}`);
     // Get the current stock
     const stock = await stockRepo.findBySymbol(symbol);
     if (stock) {
         // The stock already exists
-        return null;
+        throw ServiceError.conflict('Stock already exists');
     }
     else {
         try {
-            const id = await stockRepo.create({ symbol, name, industry, sector});
-            return getById(id);
+            id = await stockRepo.create({ symbol, name, industry, sector});
         }
         catch (err) {
-            return null;
+            throw ServiceError.internalServerError('Could not create stock');
         }
+        
     }
+    return getById(id);
 }
 
 module.exports = {

@@ -4,10 +4,18 @@
   "description": "> Schrap hierboven wat niet past",
   "main": "index.js",
   "jest": {
-    "testPathIgnorePatterns": ["src", "node_modules", "config"],
+    "testPathIgnorePatterns": [
+      "src",
+      "node_modules",
+      "config"
+    ],
     "clearMocks": true,
     "coverageProvider": "v8",
-    "testMatch": ["**/__tests__/**/*.spec.js" ]
+    "testMatch": [
+      "**/__tests__/**/*.spec.js"
+    ],
+    "globalSetup": "./__tests__/global.setup.js",
+    "globalTeardown": "./__tests__/global.teardown.js"
   },
   "scripts": {
     "start": "npx env-cmd nodemon src/index.js",
@@ -36,6 +44,8 @@
     "koa": "^2.13.4",
     "koa-bodyparser": "^4.3.0",
     "mysql2": "^2.3.3",
+    "node-emoji": "^1.11.0",
+    "serialize-error": "^8.1.0",
     "winston": "^3.8.2",
     "yarn": "^1.22.19"
   },

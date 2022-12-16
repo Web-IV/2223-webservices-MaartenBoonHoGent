@@ -1,15 +1,17 @@
 const withdrawRepo = require("../repository/withdraw");
 const { getLogger } = require('../core/logging');
 const accountRepo = require("../repository/account");
+const ServiceError = require('../core/serviceError');
 
 const debugLog = (message, meta = {}) => {
     if (!this.logger) this.logger = getLogger();
     this.logger.debug(message, meta);
 };
 
-const formatOutgoingDeposit = (withdraw) => {
-    if (!withdraw) return null;
-    if (withdraw === undefined) return null;
+const formatOutgoingWithdraw = (withdraw) => {
+    // Throw ServiceError if the withdraw does not exist
+    if (!withdraw) throw ServiceError.notFound('Withdraw does not exist');
+    if (withdraw === undefined) throw ServiceError.notFound('Withdraw does not exist');
     return {
         accountNr: withdraw.accountNr,
         date: Math.floor(new Date(withdraw.date).getTime() / 1000),
@@ -31,7 +33,7 @@ const formatIncomingDate = (date) => {
 const getAll = async () => {
     debugLog('Fetching all withdraws');
     let items = await withdrawRepo.findAll();
-    items = items.map(formatOutgoingDeposit);
+    items = items.map(formatOutgoingWithdraw);
     const count = items.length;
     return {
       items,
@@ -51,12 +53,13 @@ const getById = async ({accountNr, date}) => {
     date = formatIncomingDate(date);    
     try {   
         const withdraw = await withdrawRepo.findById({date, accountNr});
-        return formatOutgoingDeposit(withdraw);
+        return formatOutgoingWithdraw(withdraw);
     }
     catch (err) {
         const logger = getLogger();
         logger.error(`Error fetching withdraw with key ${date} and ${accountNr}`, err);
-        throw err;
+        // Throw ServiceError
+        throw ServiceError.notFound(`Withdraw with key ${date} and ${accountNr} does not exist`);
     }
 }
 
@@ -68,18 +71,19 @@ const getById = async ({accountNr, date}) => {
  * @throws Error if the withdraw could not be updated
  */
 const updateById = async ({accountNr, date}, {sum}) => {
+    const originalDate = date;
     try {
-        const originalDate = date;
         debugLog(`Updating withdraw with key ${date} and ${accountNr}, new values: ${JSON.stringify({sum})}`);
         date = formatIncomingDate(date);
         await withdrawRepo.update({date, accountNr}, {sum});
-        return getById({date: originalDate, accountNr});
     }
     catch (err) {
         const logger = getLogger();
         logger.error(`Error updating withdraw with key ${date} and ${accountNr}`, err);
-        throw err;
+        // Throw ServiceError
+        throw ServiceError.internalServerError(`Error updating withdraw with key ${date} and ${accountNr}`);
     }
+    return getById({date: originalDate, accountNr});
 
 }
 
@@ -93,7 +97,7 @@ const deleteById = async ({accountNr, date}) => {
     debugLog(`Deleting withdraw with key ${date} and ${accountNr}`);
     date = formatIncomingDate(date);
     const withdraw = await withdrawRepo.findById({date, accountNr});
-    if (!withdraw) { return false; }
+    if (!withdraw) { throw ServiceError.notFound(`Withdraw with key ${date} and ${accountNr} does not exist`) }
     else {
         try {
             await withdrawRepo.deleteById({date, accountNr});
@@ -102,7 +106,7 @@ const deleteById = async ({accountNr, date}) => {
         catch (err) {
             const logger = getLogger();
             logger.error(`Error deleting withdraw with key ${date} and ${accountNr}`, err);
-            throw err;
+            throw ServiceError.internalServerError(`Error deleting withdraw with key ${date} and ${accountNr}`);
         }
     }
 }
@@ -119,12 +123,12 @@ const create = async ({ accountNr, date, sum}) => {
     const originalDate = date;
     date = formatIncomingDate(date);
     const withdraw = await withdrawRepo.findById({date, accountNr});
-    if (withdraw) {return null;}
+    if (withdraw) {throw ServiceError.conflict(`Withdraw with key ${date} and ${accountNr} already exists`)}
     else {
         // Check if the account exists
         const account = await accountRepo.findById(accountNr);
         if (!account) {
-            return null;
+            throw ServiceError.notFound(`Account with key ${accountNr} does not exist`);
         }
         else {
             try {
@@ -134,7 +138,7 @@ const create = async ({ accountNr, date, sum}) => {
             catch (err) {
                 const logger = getLogger();
                 logger.error(`Error creating withdraw with values ${JSON.stringify({ accountNr, date, sum})}`, err);
-                return null;
+                throw ServiceError.internalServerError(`Error creating withdraw with values ${JSON.stringify({ accountNr, date, sum})}`);
             }
         }       
     } 
