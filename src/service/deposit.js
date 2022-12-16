@@ -11,7 +11,6 @@ const debugLog = (message, meta = {}) => {
 
 const formatOutgoingDeposit = (deposit) => {
     // Throw ServiceError if the deposit does not exist
-    console.log(deposit);
     if (!deposit) throw ServiceError.notFound('Deposit does not exist');
     if (deposit === undefined) throw ServiceError.notFound('Deposit does not exist');
     return {
@@ -103,7 +102,6 @@ const deleteById = async ({accountNr, date}) => {
     debugLog(`Deleting deposit with key ${date} and ${accountNr}`);
     date = formatIncomingDate(date);
     const deposit = await depositRepo.findById({date, accountNr});
-    console.log(deposit);
     if (!deposit) { throw ServiceError.notFound(`Deposit with key ${date} and ${accountNr} does not exist`) }
     else {
         try {

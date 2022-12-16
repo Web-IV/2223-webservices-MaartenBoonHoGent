@@ -22,7 +22,7 @@ const findById = async ({date, accountNr}) => {
         // Join the withdraw table with the account table
         return getKnex()(tables.withdraw).select()
         .join(tables.account, tables.account + '.accountNr', '=', tables.withdraw + '.accountNr')
-        .where(tables.withdraw + ".accountNr", "=", accountNr, tables.withdraw + ".date", "=", date).first();
+        .havingRaw(`${tables.withdraw}.accountNr = ? AND ${tables.withdraw}.date = ?`, [accountNr, date]).first();
     }
     catch (err) {
         getLogger().error(err);

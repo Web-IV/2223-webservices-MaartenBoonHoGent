@@ -206,7 +206,6 @@ describe('accounts', () => {
             // Reset the auto-increment value
             await knex.raw(`ALTER TABLE ${tables.account} AUTO_INCREMENT = 0`);
             // Console log the table
-            console.log(await knex(tables.account).select());
             await knex(tables.account).insert(DATA.accounts);
         });
 

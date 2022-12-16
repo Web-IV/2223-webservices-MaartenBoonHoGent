@@ -11,7 +11,6 @@ const debugLog = (message, meta = {}) => {
 
 const formatOutgoingWithdraw = (withdraw) => {
     // Throw ServiceError if the withdraw does not exist
-    console.log(withdraw);
     if (!withdraw) throw ServiceError.notFound('Withdraw does not exist');
     if (withdraw === undefined) throw ServiceError.notFound('Withdraw does not exist');
     return {
@@ -103,7 +102,6 @@ const deleteById = async ({accountNr, date}) => {
     debugLog(`Deleting withdraw with key ${date} and ${accountNr}`);
     date = formatIncomingDate(date);
     const withdraw = await withdrawRepo.findById({date, accountNr});
-    console.log(withdraw);
     if (!withdraw) { throw ServiceError.notFound(`Withdraw with key ${date} and ${accountNr} does not exist`) }
     else {
         try {

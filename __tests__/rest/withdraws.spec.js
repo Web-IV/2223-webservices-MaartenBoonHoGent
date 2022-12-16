@@ -136,7 +136,6 @@ describe("withdraws", () => {
             let withdraw = JSON.parse(JSON.stringify(DATA.withdraws[0]));  
             // Change the date to a timestamp in seconds
             withdraw['date'] = Math.floor(new Date(withdraw['date']).getTime() / 1000) + 5000;
-            console.log("withdraw: " + JSON.stringify(withdraw));
             const response = await request.post(DEPOSITS_URL).send(withdraw);
             expect(response.status).toBe(200);
             expect(response.body).toStrictEqual(withdraw);
