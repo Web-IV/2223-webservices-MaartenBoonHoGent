@@ -6,7 +6,7 @@ const { getLogger } = require('../core/logging');
  * @returns {Promise<Array>} Array of deposits
  */
 const findAll = async () => {
-    return getKnex()(tables.deposit).select();
+    return getKnex()(tables.deposit).select().join(tables.account, tables.account + '.accountNr', '=', tables.withdraw + '.accountNr');
 }
 
 /**
@@ -18,9 +18,11 @@ const findAll = async () => {
  * 
  */
 const findById = async ({date, accountNr}) => {
-    try {
-        return getKnex()(tables.deposit).select().where({'date': date, 
-        'accountNr': accountNr}).first();
+    try {  
+        // Join the deposit table with the account table
+        return getKnex()(tables.deposit).select()
+        .join(tables.account, tables.account + '.accountNr', '=', tables.deposit + '.accountNr')
+        .where(tables.deposit + ".accountNr", "=", accountNr, tables.deposit + ".date", "=", date).first();
     }
     catch (err) {
         getLogger().error(err);

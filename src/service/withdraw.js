@@ -2,6 +2,7 @@ const withdrawRepo = require("../repository/withdraw");
 const { getLogger } = require('../core/logging');
 const accountRepo = require("../repository/account");
 const ServiceError = require('../core/serviceError');
+const { formatOutgoingAccount } = require('./account');
 
 const debugLog = (message, meta = {}) => {
     if (!this.logger) this.logger = getLogger();
@@ -10,10 +11,15 @@ const debugLog = (message, meta = {}) => {
 
 const formatOutgoingWithdraw = (withdraw) => {
     // Throw ServiceError if the withdraw does not exist
+    console.log(withdraw);
     if (!withdraw) throw ServiceError.notFound('Withdraw does not exist');
     if (withdraw === undefined) throw ServiceError.notFound('Withdraw does not exist');
     return {
-        accountNr: withdraw.accountNr,
+        account: formatOutgoingAccount({accountNr:withdraw.accountNr, 
+        "e-mail": withdraw["e-mail"],
+        "date joined": withdraw["date joined"],
+        "invested sum": withdraw["invested sum"]
+    }),
         date: Math.floor(new Date(withdraw.date).getTime() / 1000),
         sum: withdraw.sum
     };
@@ -97,6 +103,7 @@ const deleteById = async ({accountNr, date}) => {
     debugLog(`Deleting withdraw with key ${date} and ${accountNr}`);
     date = formatIncomingDate(date);
     const withdraw = await withdrawRepo.findById({date, accountNr});
+    console.log(withdraw);
     if (!withdraw) { throw ServiceError.notFound(`Withdraw with key ${date} and ${accountNr} does not exist`) }
     else {
         try {

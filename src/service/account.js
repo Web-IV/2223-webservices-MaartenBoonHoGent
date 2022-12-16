@@ -143,4 +143,5 @@ module.exports = {
     create,
     updateById,
     deleteById,
+    formatOutgoingAccount,
 }

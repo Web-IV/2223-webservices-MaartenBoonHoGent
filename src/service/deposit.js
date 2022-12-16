@@ -2,6 +2,7 @@ const depositRepo = require("../repository/deposit");
 const { getLogger } = require('../core/logging');
 const accountRepo = require("../repository/account");
 const ServiceError = require('../core/serviceError');
+const { formatOutgoingAccount } = require('./account');
 
 const debugLog = (message, meta = {}) => {
     if (!this.logger) this.logger = getLogger();
@@ -10,10 +11,15 @@ const debugLog = (message, meta = {}) => {
 
 const formatOutgoingDeposit = (deposit) => {
     // Throw ServiceError if the deposit does not exist
+    console.log(deposit);
     if (!deposit) throw ServiceError.notFound('Deposit does not exist');
     if (deposit === undefined) throw ServiceError.notFound('Deposit does not exist');
     return {
-        accountNr: deposit.accountNr,
+        account: formatOutgoingAccount({accountNr:deposit.accountNr, 
+        "e-mail": deposit["e-mail"],
+        "date joined": deposit["date joined"],
+        "invested sum": deposit["invested sum"]
+    }),
         date: Math.floor(new Date(deposit.date).getTime() / 1000),
         sum: deposit.sum
     };

@@ -3,6 +3,7 @@ const tradeRepo = require("../repository/trade");
 const { getLogger } = require('../core/logging');
 const ServiceError = require('../core/serviceError');
 
+
 const debugLog = (message, meta = {}) => {
     if (!this.logger) this.logger = getLogger();
     this.logger.debug(message, meta);
@@ -13,7 +14,13 @@ const formatOutgoingTrade = (trade) => {
     if (trade === undefined) throw ServiceError.notFound('Trade does not exist');
     return {
         tradeId: trade.tradeId,
-        stockId: trade.stockId,
+        stock: {
+            stockId: trade.stockId,
+            symbol: trade.symbol,
+            name: trade.name,
+            industry: trade.industry,
+            sector: trade.sector
+        },
         "price bought": trade["price bought"],
         "price sold": trade["price sold"],
         "date bought": Math.floor(new Date(trade["date bought"]).getTime() / 1000),
@@ -27,6 +34,8 @@ const formatOutgoingTrade = (trade) => {
 const formatIncomingTrade = (trade) => {
     if (!trade) return null;
     if (trade === undefined) return null;
+
+
     return {
         stockId: trade.stockId,
         priceBought: trade.priceBought,

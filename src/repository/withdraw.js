@@ -6,21 +6,23 @@ const { getLogger } = require('../core/logging');
  * @returns {Promise<Array>} Array of withdraws
  */
 const findAll = async () => {
-    return getKnex()(tables.withdraw).select();
+    return getKnex()(tables.withdraw).select().join(tables.account, tables.account + '.accountNr', '=', tables.withdraw + '.accountNr');
 }
 
 /**
  * 
  * @param {*} Key with date and accountNr 
- * @returns Deposit with the given key
+ * @returns Withdraw with the given key
  * @returns undefined if the withdraw does not exist
  * @throws Error if the withdraw could not be retrieved
  * 
  */
 const findById = async ({date, accountNr}) => {
-    try {
-        return getKnex()(tables.withdraw).select().where({'date': date, 
-        'accountNr': accountNr}).first();
+    try {  
+        // Join the withdraw table with the account table
+        return getKnex()(tables.withdraw).select()
+        .join(tables.account, tables.account + '.accountNr', '=', tables.withdraw + '.accountNr')
+        .where(tables.withdraw + ".accountNr", "=", accountNr, tables.withdraw + ".date", "=", date).first();
     }
     catch (err) {
         getLogger().error(err);

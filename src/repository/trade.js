@@ -6,7 +6,7 @@ const { getLogger } = require('../core/logging');
  * @returns  {Promise<Array>}  Array of trades
  */
 const findAll = async () => {
-    return getKnex()(tables.trade).select().orderBy('tradeId');
+    return getKnex()(tables.trade).select().join(tables.stock, tables.trade + ".stockId", "=", tables.stock + ".stockId").orderBy('tradeId');
 }
 
 /**
@@ -20,7 +20,10 @@ const findAll = async () => {
 const findById = async (tradeId) => {
     try
     {
-        const trade = await getKnex()(tables.trade).where('tradeId', tradeId).first();
+        const trade = await getKnex()(tables.trade)
+        .join(tables.stock, tables.trade + ".stockId", "=", tables.stock + ".stockId")
+        .where(tables.trade + ".tradeId", "=", tradeId)
+        .first();
         return trade;
     }
     catch (err) {
