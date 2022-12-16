@@ -25,8 +25,7 @@ describe('accounts', () => {
     describe(('GET ' + ACCOUNTS_URL), () => {
         beforeAll(async () => {
             await knex(tables.account).delete();
-            // Reset the auto-increment value
-            await knex.raw(`ALTER TABLE ${tables.account} AUTO_INCREMENT = 0`);            
+                     
             await knex(tables.account).insert(DATA.accounts);
         });
 
@@ -54,8 +53,7 @@ describe('accounts', () => {
     describe(('GET ' + ACCOUNTS_URL + '/:accountNr'), () => {
         beforeAll(async () => {
             await knex(tables.account).delete();
-            // Reset the auto-increment value
-            await knex.raw(`ALTER TABLE ${tables.account} AUTO_INCREMENT = 0`);            
+                     
             await knex(tables.account).insert(DATA.accounts);
         });
 
@@ -85,8 +83,7 @@ describe('accounts', () => {
     describe(('GET ' + ACCOUNTS_URL + '/e-mail/:e-mail'), () => {
         beforeAll(async () => {
             await knex(tables.account).delete();
-            // Reset the auto-increment value
-            await knex.raw(`ALTER TABLE ${tables.account} AUTO_INCREMENT = 0`);            
+                     
             await knex(tables.account).insert(DATA.accounts);
         });
 
@@ -114,8 +111,7 @@ describe('accounts', () => {
     describe(('POST ' + ACCOUNTS_URL), () => {
         beforeAll(async () => {
             await knex(tables.account).delete();
-            // Reset the auto-increment value
-            await knex.raw(`ALTER TABLE ${tables.account} AUTO_INCREMENT = 0`);            
+                     
             await knex(tables.account).insert(DATA.accounts);
         });
 
@@ -155,8 +151,7 @@ describe('accounts', () => {
     describe(('PUT ' + ACCOUNTS_URL + '/:accountNr'), () => {
         beforeAll(async () => {
             await knex(tables.account).delete();
-            // Reset the auto-increment value
-            await knex.raw(`ALTER TABLE ${tables.account} AUTO_INCREMENT = 0`);            
+                     
             await knex(tables.account).insert(DATA.accounts);
         });
 

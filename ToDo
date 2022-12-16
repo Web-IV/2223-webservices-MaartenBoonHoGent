@@ -1,5 +1,7 @@
 [] Auth
 [X] Tests
 [X] Date objects to timestamp
-[] Request logging
+[X] Request logging
+[] Fix tests
 [X] Catch errors in service layer
+[] Add external account & stock objects to repository
