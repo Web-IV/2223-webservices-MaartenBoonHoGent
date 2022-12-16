@@ -4,4 +4,4 @@
 [X] Request logging
 [] Fix tests
 [X] Catch errors in service layer
-[] Add external account & stock objects to repository
+[X] Add external account & stock objects to repository
