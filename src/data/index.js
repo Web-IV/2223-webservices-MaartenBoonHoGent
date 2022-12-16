@@ -46,6 +46,13 @@ async function initializeData() {
 	// Database test
 	try {
 		await knexInstance.raw('SELECT 1+1 AS result');
+		await knexInstance.raw(`CREATE DATABASE IF NOT EXISTS ${DATABASE_NAME}`);
+		await knexInstance.destroy();
+
+    	knexOptions.connection.database = DATABASE_NAME;
+    	knexInstance = knex(knexOptions);
+	    await knexInstance.raw('SELECT 1+1 AS result');
+
 	} catch (error) {
 		logger.error(error.message, { error });
 		throw new Error('Could not initialize the data layer');
@@ -81,7 +88,7 @@ async function initializeData() {
 			throw new Error('Could not run the seeds');
 		}
 	}
-
+	logger.info('Succesfully connected to the database');
     return knexInstance;
 };
 
