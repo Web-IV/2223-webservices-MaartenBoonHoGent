@@ -6,7 +6,7 @@ module.exports = {
     up: async (knex) => {
         await knex.schema.createTable(tables.user, (table) => {
             table.increments("userId").unsigned().notNullable();
-            table.string("name", 60).notNullable();
+            table.string("name", 60).notNullable().defaultTo("Unknown");
             table.string("auth0Id", 60).notNullable();
             table.primary(["userId"]);
         });

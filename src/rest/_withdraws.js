@@ -4,6 +4,7 @@ const Router = require('@koa/router');
 const service = require('../service/withdraw');
 const {hasPermission, permissions} = require('../core/auth');
 const validate = require('./_validation.js');
+const { checkUser } = require('./_user');
 
 
 // Withdraw exists of the following elements: accountNr, date, sum, accountNr and date are primary key
@@ -15,6 +16,7 @@ const validate = require('./_validation.js');
  */
 
 const getAllWithdraws = async (ctx) => {
+    checkUser(ctx);
     ctx.body = await service.getAll();
 }
 getAllWithdraws.validationScheme = null;
@@ -24,6 +26,7 @@ getAllWithdraws.validationScheme = null;
  * @param {*} ctx 
  */
 const getByKey = async (ctx) => {
+    checkUser(ctx);
     ctx.body = await service.getById({accountNr: ctx.params.accountNr, date: ctx.params.date});
 }
 getByKey.validationScheme = {
@@ -38,7 +41,9 @@ getByKey.validationScheme = {
  * @param {*} ctx 
  */
 const createWithdraw = async (ctx) => {
+    checkUser(ctx);
     ctx.body = await service.create(ctx.request.body);
+    ctx.status = 201;
 
 }
 
@@ -55,6 +60,7 @@ createWithdraw.validationScheme = {
  * @param {*} ctx 
  */
 const updateWithdraw = async (ctx) => {
+    checkUser(ctx);
     ctx.body = await service.updateById({accountNr: ctx.params.accountNr, date: ctx.params.date}, {sum: ctx.request.body.sum});
 }
 updateWithdraw.validationScheme = {
@@ -73,7 +79,9 @@ updateWithdraw.validationScheme = {
  * @param {*} ctx 
  */
 const deleteWithdraw = async (ctx) => {
+    checkUser(ctx);
     ctx.body = await service.deleteById({accountNr: ctx.params.accountNr, date: ctx.params.date});
+    ctx.status = 204;
 
 }
 deleteWithdraw.validationScheme = {

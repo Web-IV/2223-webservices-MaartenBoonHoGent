@@ -43,7 +43,6 @@ function checkJwtToken() {
 async function addUserInfo(ctx) {
     const logger = getLogger();
     try {
-        console.log("SUB:", ctx.state.user.sub);
         const token = ctx.headers.authorization;
         const url = AUTH_USER_INFO;
         if (token && url && ctx.state.user) {
@@ -62,10 +61,7 @@ async function addUserInfo(ctx) {
             };
         }
     } catch (error) {
-        console.log("ERROR IN ADDUSERINFO")
-        console.log("ERROR:", error)
-        console.log(error.user.state.sub)
-        logger.error(error);
+        //logger.error(error);
         throw error;
     }
 }

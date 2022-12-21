@@ -4,16 +4,39 @@ const Router = require('@koa/router');
 const service = require('../service/trade');
 const validate = require('./_validation.js');
 const {hasPermission, permissions} = require('../core/auth');
+const { checkUser } = require('./_user');
+
 
 
 // Trade exists of the following elements: tradeNr, date, stock, amount, price, total
 // Methods: create, delete, update, find by tradeNr, find all
+/**
+ * @openapi
+ * tags:
+ *   name: Trades
+ *   description: Represents all operations on trades
+ */
 
 /**
- * Get all trades
- * @param {*} ctx 
+ * @openapi
+ * components:
+ *   schemas:
+ *     TradesList:
+ *       allOf:
+ *         - $ref: "#/components/schemas/ListResponse"
+ *         - type: object
+ *           required:
+ *             - items
+ *           properties:
+ *             items:
+ *               type: array
+ *               items:
+ *                 $ref: "#/components/schemas/Trade"
+ * 
  */
+
 const getAllTrades = async (ctx) => {
+    checkUser(ctx);
     ctx.body = await service.getAll();
 }
 getAllTrades.validationScheme = null;
@@ -23,6 +46,7 @@ getAllTrades.validationScheme = null;
  * @param {*} ctx 
  */
 const getByTradeNr = async (ctx) => {
+    checkUser(ctx);
     ctx.body = await service.getById(ctx.params.tradeNr);
     
 }
@@ -37,6 +61,7 @@ getByTradeNr.validationScheme = {
  * @param {*} ctx 
  */
 const createTrade = async (ctx) => {
+    checkUser(ctx);
     ctx.body = await service.create({
         stockId: ctx.request.body["stockId"], 
         amount: ctx.request.body["amount"],
@@ -47,6 +72,7 @@ const createTrade = async (ctx) => {
         commentBought: ctx.request.body["comment bought"],
         commentSold: ctx.request.body["comment sold"],
         });
+    ctx.status = 201;
 }
 createTrade.validationScheme = {
     body: {
@@ -66,6 +92,7 @@ createTrade.validationScheme = {
  * @param {*} ctx 
  */
 const updateTrade = async (ctx) => {
+    checkUser(ctx);
     ctx.body = await service.updateById(ctx.params.tradeNr, 
         {
             stockId: ctx.request.body["stockId"], 
@@ -99,7 +126,9 @@ updateTrade.validationScheme = {
  * @param {*} ctx 
  */
 const deleteTrade = async (ctx) => {
+    checkUser(ctx);
     ctx.body = await service.deleteById(ctx.params.tradeNr);
+    ctx.status = 204;
 
 }
 deleteTrade.validationScheme = {

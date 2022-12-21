@@ -78,9 +78,8 @@ const getByAuth0Id = async (auth0Id) => {
  */
 
 const create = async ({ name, auth0Id }) => {
-    user = formatIncomingUser({name, auth0Id});
-    debugLog(`Creating user ${user.name}`);
-    const newUserId = await userRepo.create(user);
+    debugLog(`Creating user ${name}`);
+    const newUserId = await userRepo.create({name, auth0Id});
     return await getById(newUserId);
 }
 

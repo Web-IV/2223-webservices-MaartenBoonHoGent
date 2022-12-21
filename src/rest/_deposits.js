@@ -4,6 +4,8 @@ const Router = require('@koa/router');
 const service = require('../service/deposit');
 const {hasPermission, permissions} = require('../core/auth');
 const validate = require('./_validation.js');
+const { checkUser } = require('./_user');
+
 
 
 
@@ -16,6 +18,7 @@ const validate = require('./_validation.js');
  */
 
 const getAllDeposits = async (ctx) => {
+    checkUser(ctx);
     ctx.body = await service.getAll();
 }
 getAllDeposits.validationScheme = null;
@@ -25,6 +28,7 @@ getAllDeposits.validationScheme = null;
  * @param {*} ctx 
  */
 const getByKey = async (ctx) => {
+    checkUser(ctx);
     ctx.body = await service.getById({accountNr: ctx.params.accountNr, date: ctx.params.date});
 }
 getByKey.validationScheme = {
@@ -39,6 +43,7 @@ getByKey.validationScheme = {
  * @param {*} ctx 
  */
 const createDeposit = async (ctx) => {
+    checkUser(ctx);
     ctx.body = await service.create(ctx.request.body);
     ctx.status = 201;
 }
@@ -56,6 +61,7 @@ createDeposit.validationScheme = {
  * @param {*} ctx 
  */
 const updateDeposit = async (ctx) => {
+    checkUser(ctx);
     ctx.body = await service.updateById({accountNr: ctx.params.accountNr, date: ctx.params.date}, {sum: ctx.request.body.sum});
 }
 updateDeposit.validationScheme = {
@@ -74,6 +80,7 @@ updateDeposit.validationScheme = {
  * @param {*} ctx 
  */
 const deleteDeposit = async (ctx) => {
+    checkUser(ctx);
     await service.deleteById({accountNr: ctx.params.accountNr, date: ctx.params.date});
     ctx.status = 204
 }
@@ -90,11 +97,11 @@ deleteDeposit.validationScheme = {
 module.exports = (app) => {
     const router = new Router({ prefix: '/deposits' });
     
-    router.get('/', validate(getAllDeposits.validationScheme), getAllDeposits);
-    router.get('/:accountNr/:date', validate(getByKey.validationScheme), getByKey);
-    router.post('/', validate(createDeposit.validationScheme), createDeposit);
-    router.put('/:accountNr/:date', validate(updateDeposit.validationScheme), updateDeposit);
-    router.delete('/:accountNr/:date', validate(deleteDeposit.validationScheme), deleteDeposit);
+    router.get('/', hasPermission(permissions.read), validate(getAllDeposits.validationScheme), getAllDeposits);
+    router.get('/:accountNr/:date', hasPermission(permissions.read), validate(getByKey.validationScheme), getByKey);
+    router.post('/', hasPermission(permissions.write), validate(createDeposit.validationScheme), createDeposit);
+    router.put('/:accountNr/:date', hasPermission(permissions.write), validate(updateDeposit.validationScheme), updateDeposit);
+    router.delete('/:accountNr/:date', hasPermission(permissions.write), validate(deleteDeposit.validationScheme), deleteDeposit);
 
     app.use(router.routes()).use(router.allowedMethods());
 }

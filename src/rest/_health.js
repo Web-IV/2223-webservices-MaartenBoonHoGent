@@ -2,15 +2,17 @@ const Router = require('@koa/router');
 
 const healthService = require('../service/health');
 const {hasPermission, permissions} = require('../core/auth');
-
+const { checkUser } = require('./_user');
 const validate = require('./_validation');
 
 const ping = async (ctx) => {
+  checkUser(ctx);
   ctx.body = healthService.ping();
 };
 ping.validationScheme = null;
 
 const getVersion = async (ctx) => {
+  checkUser(ctx);
   ctx.body = healthService.getVersion();
 };
 getVersion.validationScheme = null;

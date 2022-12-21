@@ -56,7 +56,7 @@ const findByAuth0Id = async (auth0Id) => {
  * @throws Error if the user could not be created
  */
 
-const create = async (name, auth0Id) => {
+const create = async ({name, auth0Id}) => {
     try {
         await getKnex()(tables.user).insert(
             {'name': name, 

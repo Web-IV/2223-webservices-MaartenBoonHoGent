@@ -6,12 +6,60 @@ const validate = require('./_validation.js');
 const {hasPermission, permissions} = require('../core/auth');
 const { checkUser } = require('./_user');
 
-// Create, delete, update, find by "e-mail", find by account id, find all
-// Account exists of the following elements: accountNr, e-mail, date joined, invested sum, password
+/**
+ * @openapi
+ * tags:
+ *   name: Accounts
+ *   description: Represents all operations on accounts
+ */
 
 /**
- * Gets all accounts
- * @param {*} ctx 
+ * @openapi
+ * components:
+ *   schemas:
+ *     AccountsList:
+ *       allOf:
+ *         - $ref: "#/components/schemas/ListResponse"
+ *         - type: object
+ *           required:
+ *             - items
+ *           properties:
+ *             items:
+ *               type: array
+ *               items:
+ *                 $ref: "#/components/schemas/Account"
+ * 
+ */
+
+/**
+ * @openapi
+ * components:
+ *   requestBodies:
+ *     InputAccount:
+ *       description: The account to create or update
+ *       required: True
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - "e-mail"
+ *               - "date joined"
+ *               - "invested sum"
+ *             properties:
+ *               "e-mail":
+ *                 type: string
+ *                 description: The e-mail address of the account
+ *                 example: 'test@gmail.com'
+ *               "date joined":
+ *                 type: integer
+ *                 format: date in the format of a timestamp (seconds since epoch)
+ *                 description: The date the account was created
+ *                 example: 1610000000
+ *               "invested sum":
+ *                 type: integer
+ *                 description: The amount of money invested in the account
+ *                 example: 1000
  */
 
 const formatInput = (ctx) => {
@@ -22,6 +70,23 @@ const formatInput = (ctx) => {
     }
 }
 
+/**
+ * @openapi
+ * /api/accounts:
+ *   get:
+ *    summary: Get all accounts
+ *    description: Returns all accounts
+ *    tags: 
+ *      - Accounts
+ *    responses:
+ *      200:
+ *        description: Returns all accounts
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: "#/components/schemas/AccountsList"
+ */
+
 const getAllAccounts = async (ctx) => {
     checkUser(ctx);
     ctx.body = await service.getAll();
@@ -29,9 +94,103 @@ const getAllAccounts = async (ctx) => {
 getAllAccounts.validationScheme = null;
 
 /**
- * Creates an account and returns the created account
- * @param {*} ctx 
+ * @openapi
+ * /api/accounts/{id}:
+ *   get:
+ *     summary: Get an account by id
+ *     tags:
+ *       - Accounts
+ *     parameters:
+ *       - $ref: "#/components/parameters/accountId"
+ *     responses:
+ *       200:
+ *         description: Returns an account
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Account"
+ *       404:
+ *         description: Account not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/404NotFound"
  */
+
+const getAccountById = async (ctx) => {
+    checkUser(ctx);
+    ctx.body = await service.getById(ctx.params.accountNr);
+}
+getAccountById.validationScheme = {
+    params: {
+        accountNr: Joi.number().integer().positive().required(),
+    }
+}
+
+
+/**
+ * @openapi
+ * /api/accounts/e-mail/{e-mail}:
+ *   get:
+ *     summary: Get an account by e-mail
+ *     tags:
+ *       - Accounts
+ *     parameters:
+ *       - $ref: "#/components/parameters/accountMail"
+ *     responses:
+ *       200:
+ *         description: Returns an account
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Account"
+ *       404:
+ *         description: Account not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/404NotFound"
+ */
+const getAccountByEmail = async (ctx) => {
+    checkUser(ctx);
+    ctx.body = await service.getByEmail(ctx.params.email);
+}
+getAccountByEmail.validationScheme = {
+    params: {
+        email: Joi.string().email().required(),
+    }
+}
+
+/**
+ * @openapi
+ * /api/accounts:
+ *   post:
+ *     summary: Create a new account
+ *     tags:
+ *       - Accounts
+ *     requestBody:
+ *       $ref: "#/components/requestBodies/InputAccount"
+ *     responses:
+ *       201:
+ *         description: Returns the created account
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Account"
+ *       400:
+ *         description: Invalid input
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/responses/400ValidationError"
+ *       409:
+ *         description: The account already exists with the given e-mail address
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/responses/409Conflict"
+ */
+
 const createAccount = async (ctx) => {
     checkUser(ctx);
     let response = await service.create(formatInput(ctx));
@@ -48,8 +207,36 @@ createAccount.validationScheme = {
 }
 
 /**
- * Updates an account and returns the updated account
- * @param {*} ctx 
+ * @openapi
+ * /api/accounts/{id}:
+ *   put:
+ *     summary: Update an account
+ *     tags:
+ *       - Accounts
+ *     parameters:
+ *       - $ref: "#/components/parameters/accountId"
+ *     requestBody:
+ *       $ref: "#/components/requestBodies/InputAccount"
+ *     responses:
+ *       200:
+ *         description: Returns the updated account
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Account"
+ *       404:
+ *         description: Account not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/404NotFound"
+ *       400:
+ *         description: Invalid input
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/400ValidationError"
+ *       
  */
 const updateAccount = async (ctx) => {
     checkUser(ctx);
@@ -67,9 +254,25 @@ updateAccount.validationScheme = {
 }
 
 /**
- * Deletes an account and returns true if the account was deleted
- * @param {*} ctx 
+ * @openapi
+ * /api/accounts/{id}:
+ *   delete:
+ *     summary: Delete an account by id
+ *     tags:
+ *       - Accounts
+ *     parameters:
+ *       - $ref: "#/components/parameters/accountId"
+ *     responses:
+ *       204:
+ *         description: Returns nothing if the account was deleted
+ *       404:
+ *         description: Account not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/404NotFound"
  */
+
 const deleteAccount = async (ctx) => {
     checkUser(ctx);
     await service.deleteById(ctx.params.accountNr);
@@ -81,44 +284,16 @@ deleteAccount.validationScheme = {
     }
 }
 
-/**
- * Gets an account by id
- * @param {*} ctx 
- */
-const getAccountById = async (ctx) => {
-    checkUser(ctx);
-    ctx.body = await service.getById(ctx.params.accountNr);
-}
-getAccountById.validationScheme = {
-    params: {
-        accountNr: Joi.number().integer().positive().required(),
-    }
-}
-
-/**
- * Gets an account by e-mail
- * @param {*} ctx 
- */
-const getAccountByEmail = async (ctx) => {
-    checkUser(ctx);
-    ctx.body = await service.getByEmail(ctx.params.email);
-}
-getAccountByEmail.validationScheme = {
-    params: {
-        email: Joi.string().email().required(),
-    }
-}
-
 // Export router
 module.exports = (app) => {
     const router = new Router({ prefix: '/accounts' });
 
-    router.get('/', validate(getAllAccounts.validationScheme), getAllAccounts);
-    router.get('/:accountNr', validate(getAccountById.validationScheme), getAccountById);
-    router.get('/e-mail/:email', validate(getAccountByEmail.validationScheme), getAccountByEmail);
-    router.post('/', validate(createAccount.validationScheme), createAccount);
-    router.put('/:accountNr', validate(updateAccount.validationScheme), updateAccount);
-    router.delete('/:accountNr', validate(deleteAccount.validationScheme), deleteAccount);
+    router.get('/', hasPermission(permissions.read), validate(getAllAccounts.validationScheme), getAllAccounts);
+    router.get('/:accountNr', hasPermission(permissions.read), validate(getAccountById.validationScheme), getAccountById);
+    router.get('/e-mail/:email', hasPermission(permissions.read), validate(getAccountByEmail.validationScheme), getAccountByEmail);
+    router.post('/', hasPermission(permissions.write), validate(createAccount.validationScheme), createAccount);
+    router.put('/:accountNr', hasPermission(permissions.write), validate(updateAccount.validationScheme), updateAccount);
+    router.delete('/:accountNr', hasPermission(permissions.write), validate(deleteAccount.validationScheme), deleteAccount);
     
     app.use(router.routes()).use(router.allowedMethods());
 };
