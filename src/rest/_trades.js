@@ -3,6 +3,7 @@ const Router = require('@koa/router');
 
 const service = require('../service/trade');
 const validate = require('./_validation.js');
+const {hasPermission, permissions} = require('../core/auth');
 
 
 // Trade exists of the following elements: tradeNr, date, stock, amount, price, total
@@ -111,11 +112,11 @@ deleteTrade.validationScheme = {
 module.exports = (app) => {
     const router = new Router({prefix : '/trades'});
 
-    router.get("/", validate(getAllTrades.validationScheme), getAllTrades);
-    router.get("/:tradeNr", validate(getByTradeNr.validationScheme), getByTradeNr);
-    router.post("/", validate(createTrade.validationScheme), createTrade);
-    router.put("/:tradeNr", validate(updateTrade.validationScheme), updateTrade);
-    router.delete("/:tradeNr", validate(deleteTrade.validationScheme), deleteTrade);
+    router.get("/", hasPermission(permissions.read), validate(getAllTrades.validationScheme), getAllTrades);
+    router.get("/:tradeNr", hasPermission(permissions.read), validate(getByTradeNr.validationScheme), getByTradeNr);
+    router.post("/", hasPermission(permissions.write), validate(createTrade.validationScheme), createTrade);
+    router.put("/:tradeNr", hasPermission(permissions.write), validate(updateTrade.validationScheme), updateTrade);
+    router.delete("/:tradeNr", hasPermission(permissions.write), validate(deleteTrade.validationScheme), deleteTrade);
 
     app.use(router.routes()).use(router.allowedMethods());
 }

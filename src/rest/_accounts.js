@@ -3,8 +3,8 @@ const Router = require('@koa/router');
 
 const service = require('../service/account');
 const validate = require('./_validation.js');
-const { response } = require('express');
-
+const {hasPermission, permissions} = require('../core/auth');
+const { checkUser } = require('./_user');
 
 // Create, delete, update, find by "e-mail", find by account id, find all
 // Account exists of the following elements: accountNr, e-mail, date joined, invested sum, password
@@ -23,6 +23,7 @@ const formatInput = (ctx) => {
 }
 
 const getAllAccounts = async (ctx) => {
+    checkUser(ctx);
     ctx.body = await service.getAll();
 };
 getAllAccounts.validationScheme = null;
@@ -32,6 +33,7 @@ getAllAccounts.validationScheme = null;
  * @param {*} ctx 
  */
 const createAccount = async (ctx) => {
+    checkUser(ctx);
     let response = await service.create(formatInput(ctx));
     ctx.body = response;
     ctx.status = 201;
@@ -50,6 +52,7 @@ createAccount.validationScheme = {
  * @param {*} ctx 
  */
 const updateAccount = async (ctx) => {
+    checkUser(ctx);
     ctx.body = await service.updateById(ctx.params.accountNr, formatInput(ctx));
 }
 updateAccount.validationScheme = {
@@ -68,7 +71,9 @@ updateAccount.validationScheme = {
  * @param {*} ctx 
  */
 const deleteAccount = async (ctx) => {
-    ctx.body = await service.deleteById(ctx.params.accountNr);
+    checkUser(ctx);
+    await service.deleteById(ctx.params.accountNr);
+    ctx.status = 204
 }
 deleteAccount.validationScheme = {
     params: {
@@ -81,8 +86,8 @@ deleteAccount.validationScheme = {
  * @param {*} ctx 
  */
 const getAccountById = async (ctx) => {
-    let response = await service.getById(ctx.params.accountNr);
-    ctx.body = response;
+    checkUser(ctx);
+    ctx.body = await service.getById(ctx.params.accountNr);
 }
 getAccountById.validationScheme = {
     params: {
@@ -95,6 +100,7 @@ getAccountById.validationScheme = {
  * @param {*} ctx 
  */
 const getAccountByEmail = async (ctx) => {
+    checkUser(ctx);
     ctx.body = await service.getByEmail(ctx.params.email);
 }
 getAccountByEmail.validationScheme = {
@@ -113,6 +119,6 @@ module.exports = (app) => {
     router.post('/', validate(createAccount.validationScheme), createAccount);
     router.put('/:accountNr', validate(updateAccount.validationScheme), updateAccount);
     router.delete('/:accountNr', validate(deleteAccount.validationScheme), deleteAccount);
-
+    
     app.use(router.routes()).use(router.allowedMethods());
 };

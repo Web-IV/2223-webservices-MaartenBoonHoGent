@@ -13,9 +13,9 @@ describe('accounts', () => {
     const ACCOUNTS_URL = '/api/accounts';
     const DATA = {
         accounts: [
-            {'e-mail': 'tom.doe@gmail.com', 'date joined': '2022-01-01 00:00:00', 'invested sum': 0.0}, // Timestamp: 1640991600
-            {'e-mail': 'pip.doe@gmail.com', 'date joined': '2022-02-01 00:00:00', 'invested sum': 5000.0}, // Timestamp: 1643670000
-            {'e-mail': 'sophie.doe@gmail.com', 'date joined': '2022-03-01 00:00:00', 'invested sum': 10000.0} // Timestamp: 1646089200
+            {'e-mail': 'tom.doe@gmail.com', 'date joined': new Date('2022-01-01 00:00:00'), 'invested sum': 0.0}, // Timestamp: 1640991600
+            {'e-mail': 'pip.doe@gmail.com', 'date joined': new Date('2022-02-01 00:00:00'), 'invested sum': 5000.0}, // Timestamp: 1643670000
+            {'e-mail': 'sophie.doe@gmail.com', 'date joined': new Date('2022-03-01 00:00:00'), 'invested sum': 10000.0} // Timestamp: 1646089200
         ]
     }
     // Test cases

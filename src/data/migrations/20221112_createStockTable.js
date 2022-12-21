@@ -30,6 +30,6 @@ module.exports = {
     },
     
     down: async (knex) => {
-        await knex.schema.dropTable(tables.stock);
+        await knex.schema.dropTableIfExists(tables.stock);
     }
 }

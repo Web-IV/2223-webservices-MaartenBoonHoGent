@@ -2,7 +2,9 @@ const Joi = require('joi');
 const Router = require('@koa/router');
 
 const service = require('../service/deposit');
+const {hasPermission, permissions} = require('../core/auth');
 const validate = require('./_validation.js');
+
 
 
 // Deposit exists of the following elements: accountNr, date, sum, accountNr and date are primary key
@@ -38,7 +40,7 @@ getByKey.validationScheme = {
  */
 const createDeposit = async (ctx) => {
     ctx.body = await service.create(ctx.request.body);
-
+    ctx.status = 201;
 }
 
 createDeposit.validationScheme = {
@@ -72,8 +74,8 @@ updateDeposit.validationScheme = {
  * @param {*} ctx 
  */
 const deleteDeposit = async (ctx) => {
-    ctx.body = await service.deleteById({accountNr: ctx.params.accountNr, date: ctx.params.date});
-
+    await service.deleteById({accountNr: ctx.params.accountNr, date: ctx.params.date});
+    ctx.status = 204
 }
 deleteDeposit.validationScheme = {
     params: {

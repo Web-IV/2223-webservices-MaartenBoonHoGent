@@ -6,6 +6,7 @@ const depositRouter = require('./_deposits');
 const withdrawRouter = require('./_withdraws');
 const tradeRouter = require('./_trades');
 const stockRouter = require('./_stocks');
+const healthRouter = require('./_health');
 
 module.exports = (app) => {
     const router = new Router({ prefix: '/api' });
@@ -15,6 +16,7 @@ module.exports = (app) => {
     withdrawRouter(router);
     tradeRouter(router);
     stockRouter(router);
+    healthRouter(router);
 
     app.use(router.routes()).use(router.allowedMethods());
 };

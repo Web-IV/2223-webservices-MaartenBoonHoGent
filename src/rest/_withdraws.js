@@ -2,6 +2,7 @@ const Joi = require('joi');
 const Router = require('@koa/router');
 
 const service = require('../service/withdraw');
+const {hasPermission, permissions} = require('../core/auth');
 const validate = require('./_validation.js');
 
 
@@ -88,11 +89,11 @@ deleteWithdraw.validationScheme = {
 module.exports = (app) => {
     const router = new Router({ prefix: '/withdraws' });
     
-    router.get('/', validate(getAllWithdraws.validationScheme), getAllWithdraws);
-    router.get('/:accountNr/:date', validate(getByKey.validationScheme), getByKey);
-    router.post('/', validate(createWithdraw.validationScheme), createWithdraw);
-    router.put('/:accountNr/:date', validate(updateWithdraw.validationScheme), updateWithdraw);
-    router.delete('/:accountNr/:date', validate(deleteWithdraw.validationScheme), deleteWithdraw);
+    router.get('/', hasPermission(permissions.read), validate(getAllWithdraws.validationScheme), getAllWithdraws);
+    router.get('/:accountNr/:date', hasPermission(permissions.read), validate(getByKey.validationScheme), getByKey);
+    router.post('/', hasPermission(permissions.write), validate(createWithdraw.validationScheme), createWithdraw);
+    router.put('/:accountNr/:date', hasPermission(permissions.write), validate(updateWithdraw.validationScheme), updateWithdraw);
+    router.delete('/:accountNr/:date', hasPermission(permissions.write), validate(deleteWithdraw.validationScheme), deleteWithdraw);
 
     app.use(router.routes()).use(router.allowedMethods());
 }

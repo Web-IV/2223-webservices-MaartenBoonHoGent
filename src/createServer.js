@@ -4,7 +4,7 @@ const bodyParser = require('koa-bodyparser');
 const emoji = require("node-emoji");
 const {
     serializeError,
-  } = require('serialize-error');
+} = require('serialize-error');
 
 const config = require('config');
 const { getLogger, initializeLogger } = require('./core/logging')
@@ -19,36 +19,49 @@ const CORS_MAX_AGE = config.get('cors.maxAge');
 const NODE_ENV = config.get('env');
 const LOG_LEVEL = config.get('log.level');
 const LOG_DISABLED = config.get('log.disabled');
+const { checkJwtToken } = require('./core/auth');
 // function createServer 
 
-module.exports = async function createServer () {
+module.exports = async function createServer() {
     // Start with the logger
-	initializeLogger({
-		level: LOG_LEVEL,
-		disabled: LOG_DISABLED,
-		defaultMeta: { NODE_ENV },
-	  });
-	const logger = getLogger();
-	
+    initializeLogger({
+        level: LOG_LEVEL,
+        disabled: LOG_DISABLED,
+        defaultMeta: { NODE_ENV },
+    });
+    const logger = getLogger();
+
     // Initialize the database
-	await initializeData();
+    await initializeData();
 
     //	console.log(`log level ${LOG_LEVEL}, logs enabled: ${LOG_DISABLED !== true}`)
 
     // CORS
     const app = new Koa();
-	app.use(
-		koaCors({
-			origin: (ctx) => {
-				if (CORS_ORIGINS.indexOf(ctx.request.header.origin) !== -1) {
-					return ctx.request.header.origin;
-				}
-				return CORS_ORIGINS[0];
-			},
-			allowHeaders: ['Accept', 'Content-Type', 'Authorization'],
-			maxAge: CORS_MAX_AGE,
-		})
-	);
+    app.use(
+        koaCors({
+            origin: (ctx) => {
+                if (CORS_ORIGINS.indexOf(ctx.request.header.origin) !== -1) {
+                    return ctx.request.header.origin;
+                }
+                return CORS_ORIGINS[0];
+            },
+            allowHeaders: ['Accept', 'Content-Type', 'Authorization'],
+            maxAge: CORS_MAX_AGE,
+        })
+    );
+
+    // JWT
+    app.use(checkJwtToken());
+
+    // middleware for logging the token
+    app.use(async (ctx, next) => {
+        const logger = getLogger();
+        logger.debug(ctx.headers.authorization); // 👈 1
+        logger.debug(JSON.stringify(ctx.state.user)); // 👈 2
+        logger.debug(ctx.state.jwtOriginalError); // 👈 3
+        await next();
+    });
 
     app.use(bodyParser())
 
@@ -66,7 +79,7 @@ module.exports = async function createServer () {
         };
         try {
             await next();
-    
+
             logger.info(
                 `${getStatusEmoji()} ${ctx.method} ${ctx.status} ${ctx.url}`,
             );
@@ -74,7 +87,7 @@ module.exports = async function createServer () {
             logger.error(`${emoji.get('x')} ${ctx.method} ${ctx.status} ${ctx.url}`, {
                 error,
             });
-    
+
             throw error;
         }
     });
@@ -83,7 +96,7 @@ module.exports = async function createServer () {
     app.use(async (ctx, next) => {
         try {
             await next();
-    
+
             if (ctx.status === 404) {
                 ctx.body = {
                     code: 'NOT_FOUND',
@@ -96,7 +109,7 @@ module.exports = async function createServer () {
             logger.error('Error occured while handling a request', {
                 error: serializeError(error),
             });
-    
+
             let statusCode = error.status || 500;
             let errorBody = {
                 code: error.code || 'INTERNAL_SERVER_ERROR',
@@ -104,24 +117,24 @@ module.exports = async function createServer () {
                 details: error.details || {},
                 stack: NODE_ENV !== 'production' ? error.stack : undefined,
             };
-    
+
             if (error instanceof ServiceError) {
                 if (error.isNotFound) {
                     statusCode = 404;
                 }
-    
+
                 if (error.isValidationFailed) {
                     statusCode = 400;
                 }
-    
+
                 if (error.isUnauthorized) {
                     statusCode = 401;
                 }
-    
+
                 if (error.isForbidden) {
                     statusCode = 403;
                 }
-                
+
                 if (error.isConflict) {
                     statusCode = 409;
                 }
@@ -129,10 +142,17 @@ module.exports = async function createServer () {
                     statusCode = 500;
                 }
             }
-    
+
+            if (ctx.state.jwtOriginalError) {
+                statusCode = 401;
+                errorBody.code = 'UNAUTHORIZED';
+                errorBody.message = ctx.state.jwtOriginalError.message;
+                errorBody.details.jwtOriginalError = serializeError(ctx.state.jwtOriginalError);
+            }
+
             ctx.status = statusCode;
             ctx.body = errorBody;
-        } 
+        }
     });
     installRest(app);
 

@@ -24,6 +24,6 @@ module.exports = {
     },
 
     down: async (knex) => {
-        await knex.schema.dropTable(tables.withdraw);
+        await knex.schema.dropTableIfExists(tables.withdraw);
     }
 }

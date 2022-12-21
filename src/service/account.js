@@ -2,7 +2,7 @@ const accountRepo = require("../repository/account");
 const { getLogger } = require('../core/logging');
 const ServiceError = require('../core/serviceError');
 
-// Account exists of the following elements: accountNr, e-mail, date joined, invested sum, password
+// Account exists of the following elements: accountNr, e-mail, date joined, invested sum
 
 const formatOutgoingAccount = (account) => {
     if (!account) throw ServiceError.notFound('Account does not exist');

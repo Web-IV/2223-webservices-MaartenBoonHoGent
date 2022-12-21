@@ -116,7 +116,8 @@ const tables = Object.freeze({
     withdraw: 'Withdraw',
     deposit: 'Deposit',
     account: 'Account',
-    trade: 'Trade' 
+    trade: 'Trade',
+	user: 'User',
 });
 	
 module.exports = {

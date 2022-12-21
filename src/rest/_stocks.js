@@ -3,6 +3,7 @@ const Router = require('@koa/router');
 
 const service = require('../service/stock');
 const validate = require('./_validation.js');
+const {hasPermission, permissions} = require('../core/auth');
 
 // Stock exists of the following elements: stockId, symbol, name, industry, sector, IPO date, date of incorporation
 // Methods: create, delete, update, find by stockId, find by symbol, find all
@@ -72,11 +73,11 @@ getBySymbol.validationScheme = {
 
 module.exports = (app) => {
     const router = new Router({ prefix: '/stocks' });
-    router.get("/", validate(getAllStocks.validationScheme), getAllStocks);
-    router.get("/:stockId", validate(getByStockId.validationScheme), getByStockId);
-    router.get("/symbol/:symbol", validate(getBySymbol.validationScheme), getBySymbol);
-    router.post("/", validate(createStock.validationScheme), createStock);
-    router.put("/:stockId", validate(updateStock.validationScheme), updateStock);
-    router.delete("/:stockId", validate(deleteStock.validationScheme), deleteStock);
+    router.get("/", hasPermission(permissions.read), validate(getAllStocks.validationScheme), getAllStocks);
+    router.get("/:stockId", hasPermission(permissions.read), validate(getByStockId.validationScheme), getByStockId);
+    router.get("/symbol/:symbol", hasPermission(permissions.read), validate(getBySymbol.validationScheme), getBySymbol);
+    router.post("/", hasPermission(permissions.write), validate(createStock.validationScheme), createStock);
+    router.put("/:stockId", hasPermission(permissions.write), validate(updateStock.validationScheme), updateStock);
+    router.delete("/:stockId", hasPermission(permissions.write), validate(deleteStock.validationScheme), deleteStock);
     app.use(router.routes()).use(router.allowedMethods());
 }
