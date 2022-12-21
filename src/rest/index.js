@@ -77,23 +77,18 @@ const healthRouter = require('./_health');
  *           example: "Consumer Electronics"
  *     Trade:
  *       required:
- *         - "tradeId"
- *         - "stock"
+ *         - "stockId"
  *         - "price bought"
  *         - "price sold"
  *         - "date bought"
  *         - "date sold"
  *         - "amount"
- *         - "comment bought"
- *         - "comment sold"
  *       properties:
- *         "tradeId":
+ *         "stockId":
  *           type: integer
  *           format: int64
- *           description: The trade id, unique identifier
+ *           description: The stock id of the stock bought
  *           example: 1
- *         "stock":
- *           $ref: "#/components/schemas/Stock"
  *         "price bought":
  *           type: number
  *           description: The price the stock was bought at
@@ -117,17 +112,48 @@ const healthRouter = require('./_health');
  *           format: int64
  *           description: The amount of stocks bought
  *           example: 10
- *        "comment bought":
+ *         "comment bought":
  *           type: string
  *           description: The comment for the buy order
  *           example: "Buy at 100"
- *        "comment sold":
+ *         "comment sold":
  *           type: string
  *           description: The comment for the sell order
  *           example: "Sell at 100"
- * 
- * 
- * 
+ *     Deposit:
+ *       required:
+ *         - "account"
+ *         - "date"
+ *         - "sum"
+ *       properties:
+ *         "account":
+ *           $ref: '#/components/schemas/Account'
+ *         "date":
+ *           type: integer
+ *           format: date in the format of a timestamp (seconds since epoch)
+ *           description: The date the deposit was made
+ *           example: 1610000000
+ *         "sum":
+ *           type: number
+ *           description: The amount of money deposited
+ *           example: 1000.00
+ *     Withdraw:
+ *       required:
+ *         - "account"
+ *         - "date"
+ *         - "sum"
+ *       properties:
+ *         "account":
+ *           $ref: '#/components/schemas/Account'
+ *         "date":
+ *           type: integer
+ *           format: date in the format of a timestamp (seconds since epoch)
+ *           description: The date the withdraw was made
+ *           example: 1610000000
+ *         "sum":
+ *           type: number
+ *           description: The amount of money withdrawn
+ *           example: 1000.00
  */
 
 

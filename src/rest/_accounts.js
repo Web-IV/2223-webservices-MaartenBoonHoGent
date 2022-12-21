@@ -114,7 +114,7 @@ getAllAccounts.validationScheme = null;
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/404NotFound"
+ *               $ref: "#/components/responses/404NotFound"
  */
 
 const getAccountById = async (ctx) => {
@@ -149,7 +149,7 @@ getAccountById.validationScheme = {
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/404NotFound"
+ *               $ref: "#/components/responses/404NotFound"
  */
 const getAccountByEmail = async (ctx) => {
     checkUser(ctx);
@@ -229,13 +229,13 @@ createAccount.validationScheme = {
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/404NotFound"
+ *               $ref: "#/components/responses/404NotFound"
  *       400:
  *         description: Invalid input
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/400ValidationError"
+ *               $ref: "#/components/responses/400ValidationError"
  *       
  */
 const updateAccount = async (ctx) => {
@@ -270,7 +270,7 @@ updateAccount.validationScheme = {
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/404NotFound"
+ *               $ref: "#/components/responses/404NotFound"
  */
 
 const deleteAccount = async (ctx) => {

@@ -9,7 +9,7 @@ const {
 } = require('serialize-error');
 
 const config = require('config');
-const swaggerConfig = require('../swagger.config');
+const swaggerConfig = require('../config/swagger.config');
 const { getLogger, initializeLogger } = require('./core/logging')
 const ServiceError = require('./core/serviceError');
 

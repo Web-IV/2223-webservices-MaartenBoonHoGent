@@ -19,7 +19,8 @@
   },
   "scripts": {
     "start": "npx env-cmd nodemon src/index.js",
-    "test": "npx env-cmd -f .env.test jest"
+    "test": "npx env-cmd -f .env.test jest",
+    "test:coverage": "npx env-cmd -f .env.test jest --coverage"
   },
   "repository": {
     "type": "git",

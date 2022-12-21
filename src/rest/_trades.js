@@ -35,6 +35,80 @@ const { checkUser } = require('./_user');
  * 
  */
 
+/**
+ * @openapi
+ * components:
+ *   requestBodies:
+ *     InputTrade:
+ *       description: The trade to create or update
+ *       required: True
+ *       content:
+ *         application/json:
+ *           schema:
+ *             required:
+ *               - "stock"
+ *               - "price bought"
+ *               - "price sold"
+ *               - "date bought"
+ *               - "date sold"
+ *               - "amount"
+ *             properties:
+ *               "tradeId":
+ *                 type: integer
+ *                 format: int64
+ *                 description: The trade id, unique identifier
+ *                 example: 1
+ *               "stock":
+ *                 $ref: "#/components/schemas/Stock"
+ *               "price bought":
+ *                 type: number
+ *                 description: The price the stock was bought at
+ *                 example: 100.00
+ *               "price sold":
+ *                 type: number
+ *                 description: The price the stock was sold at
+ *                 example: 101.00
+ *               "date bought":
+ *                 type: integer
+ *                 format: date in the format of a timestamp (seconds since epoch)
+ *                 description: The date the trade was started
+ *                 example: 1610000000
+ *               "date sold":
+ *                 type: integer
+ *                 format: date in the format of a timestamp (seconds since epoch)
+ *                 description: The date the trade was ended
+ *                 example: 1610005000
+ *               "amount":
+ *                 type: integer
+ *                 format: int64
+ *                 description: The amount of stocks bought
+ *                 example: 10
+ *               "comment bought":
+ *                 type: string
+ *                 description: The comment for the buy order
+ *                 example: "Buy at 100"
+ *               "comment sold":
+ *                 type: string
+ *                 description: The comment for the sell order
+ *                 example: "Sell at 100"
+ */
+
+/**
+ * @openapi
+ * /api/trades:
+ *   get:
+ *    summary: Get all trades
+ *    description: Returns all trades
+ *    tags: 
+ *      - Trades
+ *    responses:
+ *      200:
+ *        description: Returns all trades
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: "#/components/schemas/TradesList"
+ */
 const getAllTrades = async (ctx) => {
     checkUser(ctx);
     ctx.body = await service.getAll();
@@ -42,9 +116,29 @@ const getAllTrades = async (ctx) => {
 getAllTrades.validationScheme = null;
 
 /**
- * Get a trade by its tradeNr
- * @param {*} ctx 
+ * @openapi
+ * /api/trades/{id}:
+ *   get:
+ *     summary: Get a trade by id
+ *     tags:
+ *       - Trades
+ *     parameters:
+ *       - $ref: "#/components/parameters/tradeId"
+ *     responses:
+ *       200:
+ *         description: Returns a trade
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Trade"
+ *       404:
+ *         description: trade not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/responses/404NotFound"
  */
+
 const getByTradeNr = async (ctx) => {
     checkUser(ctx);
     ctx.body = await service.getById(ctx.params.tradeNr);
@@ -57,9 +151,29 @@ getByTradeNr.validationScheme = {
 }
 
 /**
- * Create a trade
- * @param {*} ctx 
+ * @openapi
+ * /api/trades:
+ *   post:
+ *     summary: Create a new trade
+ *     tags:
+ *       - Trades
+ *     requestBody:
+ *       $ref: "#/components/requestBodies/InputTrade"
+ *     responses:
+ *       201:
+ *         description: Returns the created trade
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Trade"
+ *       400:
+ *         description: Invalid input
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/responses/400ValidationError"
  */
+
 const createTrade = async (ctx) => {
     checkUser(ctx);
     ctx.body = await service.create({
@@ -88,8 +202,36 @@ createTrade.validationScheme = {
 }
 
 /**
- * Update a trade
- * @param {*} ctx 
+ * @openapi
+ * /api/trades/{id}:
+ *   put:
+ *     summary: Update a trade
+ *     tags:
+ *       - Trades
+ *     parameters:
+ *       - $ref: "#/components/parameters/tradeId"
+ *     requestBody:
+ *       $ref: "#/components/requestBodies/InputTrade"
+ *     responses:
+ *       200:
+ *         description: Returns the updated trade
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Trade"
+ *       404:
+ *         description: Trade not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/responses/404NotFound"
+ *       400:
+ *         description: Invalid input
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/responses/400ValidationError"
+ *       
  */
 const updateTrade = async (ctx) => {
     checkUser(ctx);
@@ -122,8 +264,23 @@ updateTrade.validationScheme = {
 }
 
 /**
- * Delete a trade
- * @param {*} ctx 
+ * @openapi
+ * /api/trades/{id}:
+ *   delete:
+ *     summary: Delete a trade by id
+ *     tags:
+ *       - Trades
+ *     parameters:
+ *       - $ref: "#/components/parameters/tradeId"
+ *     responses:
+ *       204:
+ *         description: Returns nothing if the trade was deleted
+ *       404:
+ *         description: Trade not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/responses/404NotFound"
  */
 const deleteTrade = async (ctx) => {
     checkUser(ctx);

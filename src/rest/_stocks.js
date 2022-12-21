@@ -111,7 +111,7 @@ getAllStocks.validationScheme = null;
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/404NotFound"
+ *               $ref: "#/components/responses/404NotFound"
  */
 
 const getByStockId = async (ctx) => {
@@ -146,7 +146,7 @@ getByStockId.validationScheme = {
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/404NotFound"
+ *               $ref: "#/components/responses/404NotFound"
  */
 
 const getBySymbol = async (ctx) => {
@@ -229,15 +229,16 @@ createStock.validationScheme = {
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/404NotFound"
+ *               $ref: "#/components/responses/404NotFound"
  *       400:
  *         description: Invalid input
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/400ValidationError"
+ *               $ref: "#/components/responses/400ValidationError"
  *       
  */
+
 const updateStock = async (ctx) => {
     checkUser(ctx);
     ctx.body = await service.updateById(ctx.params.stockId, ctx.request.body);
@@ -271,7 +272,7 @@ updateStock.validationScheme = {
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/404NotFound"
+ *               $ref: "#/components/responses/404NotFound"
  */
 const deleteStock = async (ctx) => {
     checkUser(ctx);
