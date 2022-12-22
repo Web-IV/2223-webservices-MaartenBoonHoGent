@@ -19,6 +19,7 @@
   },
   "scripts": {
     "start": "npx env-cmd nodemon src/index.js",
+    "start:prod": "node src/index.js",
     "test": "npx env-cmd -f .env.test jest",
     "test:coverage": "npx env-cmd -f .env.test jest --coverage",
     "test:debug": "npx env-cmd -f .env.test jest --detectOpenHandles"

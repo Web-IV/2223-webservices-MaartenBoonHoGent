@@ -1,7 +1,4 @@
-# Examenopdracht Front-end Web Development / Web Services
-
-> Schrap hierboven wat niet past
-
+# Examenopdracht Web Services
 - Student: Maarten Boon
 - Studentennummer: 202185123
 - E-mailadres: maarten.boon@student.hogent.be
@@ -14,35 +11,39 @@ Ik verwacht dat volgende software reeds geïnstalleerd is:
 - [npm](https://www.npmjs.com)
 - [Yarn](https://yarnpkg.com)
 - [MySQL Community Server](https://dev.mysql.com/downloads/mysql/)
-- [apidoc](http://apidocjs.com)
-- Yarn packages:
-    - `yarn add config`
-    - `yarn add env-cmd`
-    - `yarn add jest --dev`
-    - `yarn add supertest --dev`
-
-> Vul eventueel aan
 
 ## Opstarten
 
-    .env aanmaken: bestand heeft volgende attributen
-    - NODE_ENV
-    - PORT 
-    - DATABASE_HOST
-    - DATABASE_PORT
-    - DATABASE_USERNAME
-    - DATABASE_PASSWORD
-    - DATABASE_NAME
-    .env.test aanmaken: bestand heeft volgende attributen - dit een environment voor de testen
-    - NODE_ENV
-    - PORT
-    - DATABASE_HOST
-    - DATABASE_PORT
-    - DATABASE_USERNAME
-    - DATABASE_PASSWORD
-    - DATABASE_NAME
+.env aanmaken: bestand heeft volgende attributen
+- NODE_ENV
+- PORT 
+- DATABASE_HOST
+- DATABASE_PORT
+- DATABASE_USERNAME
+- DATABASE_PASSWORD
+- DATABASE_NAME
+- AUTH_JWKS_URI
+- AUTH_AUDIENCE
+- AUTH_ISSUER
+- AUTH_USER_INFO
+- AUTH_TOKEN_URL
+- AUTH_CLIENT_ID
+- AUTH_CLIENT_SECRET
+- AUTH_TEST_USER_USERNAME
+- AUTH_TEST_USER_PASSWORD
+
+<br>.env.test aanmaken: bestand heeft dezelfde attributen - dit een environment voor de testen
+
+<br>Zorg ervoor dat de database-connectie geconfigureerd is.
+voer een `yarn install` uit.
 
 ## Testen
 
-> Schrijf hier hoe we de testen uitvoeren (.env bestanden aanmaken, commando's om uit te voeren...)
+- Zorg ervoor dat jest geïnstalleerd is
+- Zorg ervoor dat de database-connectie geconfigureerd is
+- Zorg ervoor dat de test-gebruiker bestaat in auth0 met de juiste rechten: read, write
 
+<br>Om de testen uit te voeren, voer volgende commando uit:
+`yarn test`
+<br>Om de testen uit te voeren met coverage, voer volgende commando uit:
+`yarn test:coverage`
