@@ -81,8 +81,10 @@ const updateById = async (accountNr, { eMail, dateJoined, investedSum}) => {
     
     // Find the account
     const account = await accountRepo.findById(accountNr);
-    if (!account) { return null; }
-    else {await accountRepo.update(accountNr, formatIncomingAccount({eMail, dateJoined, investedSum}));}
+    if (!account) { throw ServiceError.notFound(`account with accountNr ${accountNr} doesn't exist.`); }
+    const getAccountByEmail = await accountRepo.findByEmail(eMail);
+    if (getAccountByEmail && getAccountByEmail.accountNr !== accountNr) { throw ServiceError.conflict(`account with eMail ${eMail} already exists.`); }
+    await accountRepo.update(accountNr, formatIncomingAccount({eMail, dateJoined, investedSum}))
     return getById(accountNr);
 }
 
@@ -95,14 +97,13 @@ const updateById = async (accountNr, { eMail, dateJoined, investedSum}) => {
 const deleteById = async (accountNr) => {
     debugLog(`Deleting account with id ${accountNr}`);
     const account = await accountRepo.findById(accountNr);
-    if (!account) { return false; }
+    if (!account) { throw ServiceError.notFound(`account with accountNr ${accountNr} doesn't exist.`) }
     else {
         try {
             await accountRepo.deleteById(accountNr);
-            return true;
         }
         catch (err) {
-            return false;
+            throw ServiceError.internalServerError('Could not delete account');
         }
     }
 }
