@@ -1374,7 +1374,7 @@ concat-map@0.0.1:
 
 config@^3.3.8:
   version "3.3.8"
-  resolved "https://registry.npmjs.org/config/-/config-3.3.8.tgz"
+  resolved "https://registry.yarnpkg.com/config/-/config-3.3.8.tgz#14ef7aef22af25877fdaee696ec64d761feb7be0"
   integrity sha512-rFzF6VESOdp7wAXFlB9IOZI4ouL05g3A03v2eRcTHj2JBQaTNJ40zhAUl5wRbWHqLZ+uqp/7OE0BWWtAVgrong==
   dependencies:
     json5 "^2.2.1"
